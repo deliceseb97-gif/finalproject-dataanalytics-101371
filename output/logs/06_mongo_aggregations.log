@@ -1,6 +1,6 @@
 PS dataanalytics> ./.venv/Scripts/python mongodb/aggregations.py
 
-=== revenue_by_category_month  (100 rows, 0.8s)
+=== revenue_by_category_month  (100 rows, 2.1s)
  units_sold category_id              category_name   month  gross_revenue  orders  avg_profit_margin  est_gross_profit  rank_in_month
        9856     cat_004             Kelly-Santiago 2026-08     2529375.41    4783             0.2060         521051.33              1
        9280     cat_005            Cameron-Parsons 2026-08     2527493.67    4513             0.2750         695060.76              2
@@ -18,15 +18,15 @@ PS dataanalytics> ./.venv/Scripts/python mongodb/aggregations.py
        8800     cat_003                   Bush Inc 2026-08     2212006.93    4281             0.2650         586181.84             14
        8883     cat_008           Rodriguez-Graham 2026-08     2188395.62    4326             0.3633         795044.13             15
 
-=== user_segmentation  (5 rows, 0.6s)
+=== user_segmentation  (5 rows, 1.2s)
  _id  users  avg_spent  avg_order_value  avg_days_since_last_purchase     revenue                  segment
-   1   1359   17490.96          1010.85                           4.5 23770218.41 Occasional (1-19 orders)
-  20   3330   22589.82          1015.84                           3.5 75224113.36          Regular (20-24)
-  25   3516   27149.52          1013.14                           2.9 95457712.37         Frequent (25-29)
-  30   1474   31857.45          1011.06                           2.5 46957880.94    Very frequent (30-34)
-  35    321   36829.59          1005.22                           2.2 11822299.06           Champion (35+)
+   1   1359   17490.96          1010.85                           5.5 23770218.41 Occasional (1-19 orders)
+  20   3330   22589.82          1015.84                           4.5 75224113.36          Regular (20-24)
+  25   3516   27149.52          1013.14                           3.9 95457712.37         Frequent (25-29)
+  30   1474   31857.45          1011.06                           3.5 46957880.94    Very frequent (30-34)
+  35    321   36829.59          1005.22                           3.2 11822299.06           Champion (35+)
 
-=== product_popularity_most_viewed  (25 rows, 6.1s)
+=== product_popularity_most_viewed  (25 rows, 8.3s)
  views  sessions product_id                                  product_name                        category  avg_view_seconds  units_sold  orders   revenue
    105       105 prod_00402                Cross-Platform Actuating Frame         Ellis, Baker and Wright             189.4         234     115  47111.22
    105       105 prod_01481         Front-Line Context-Sensitive Protocol                     Preston Ltd             174.7          47      23   6385.89
@@ -34,35 +34,35 @@ PS dataanalytics> ./.venv/Scripts/python mongodb/aggregations.py
    102       102 prod_02193                Reduced Web-Enabled Projection Rodriguez, Figueroa and Sanchez             211.7         214     118  34103.04
    101       101 prod_04912         Polarized Even-Keeled Instruction Set      Patterson, Smith and Jones             159.0         253     128  99239.25
     99        99 prod_02387     Multi-Channeled Methodical Conglomeration                     Hancock Inc             167.0         233     119  16212.14
-    98        98 prod_03495         Digitized Mission-Critical Complexity                        Bush Inc             161.9         253     123 112658.37
     98        98 prod_04260                Extended Incremental Groupware Rodriguez, Figueroa and Sanchez             166.6         188      97  67962.00
+    98        98 prod_03495         Digitized Mission-Critical Complexity                        Bush Inc             161.9         253     123 112658.37
     98        97 prod_02063             Assimilated Transitional Approach                     Baldwin Ltd             205.4         233     115  10000.36
     98        98 prod_04509              Versatile 5Thgeneration Solution                     Hancock Inc             170.7         263     135  43629.07
-    97        97 prod_00199              Balanced 5Thgeneration Framework                     Preston Ltd             167.4         260     136  17747.60
-    97        97 prod_01222      Multi-Layered Content-Based Installation                    Mitchell-Kim             173.8         239     126 102932.52
     97        97 prod_02264         Innovative Zero Administration Policy         Ellis, Baker and Wright             211.1         257     125  39696.22
     97        97 prod_00288                   Seamless Cohesive Hierarchy                      Spence PLC             181.9         237     119  37616.64
     97        97 prod_00073                          Optimized Stable Hub      Patterson, Smith and Jones             211.6         305     141 103364.50
+    97        97 prod_01222      Multi-Layered Content-Based Installation                    Mitchell-Kim             173.8         239     126 102932.52
+    97        97 prod_00199              Balanced 5Thgeneration Framework                     Preston Ltd             167.4         260     136  17747.60
 
 === product_popularity_top_selling  (25 rows, 0.7s)
- units_sold  orders product_id                                product_name                   category   revenue
-        322     148 prod_01551 Automated 4Thgeneration Process Improvement                 Spence PLC  23757.16
-        317     149 prod_00826                Configurable Static Hardware             Skinner-Romero  54929.76
-        317     151 prod_02892       Customer-Focused Modular Service-Desk              King-Odonnell 119800.64
-        317     160 prod_01007          User-Centric Multimedia Capability              King-Odonnell 154245.86
-        315     164 prod_00992             Polarized Optimal Orchestration                Baldwin Ltd 124544.70
-        312     154 prod_02188              Managed Dedicated Service-Desk             Skinner-Romero 104738.40
-        311     152 prod_01190  Re-Engineered Solution-Oriented Projection                   Bush Inc   8126.43
-        309     149 prod_03851             Optional Maximized Installation                 Spence PLC  80667.54
-        309     156 prod_04081          Multi-Layered Bottom-Line Function              Carney-Santos 103471.74
-        307     152 prod_01737        De-Engineered 3Rdgeneration Matrices              Carney-Santos  40514.79
-        307     152 prod_02236                Balanced Maximized Algorithm               Owens-Daniel  52150.09
-        306     154 prod_00253          Synergistic Systematic Parallelism               Phillips Inc 166880.16
-        306     141 prod_04073       Function-Based Bi-Directional Circuit               Mitchell-Kim  87512.94
-        306     148 prod_01534         Upgradable Grid-Enabled Application               Phillips Inc  54969.84
-        305     141 prod_00073                        Optimized Stable Hub Patterson, Smith and Jones 103364.50
+ units_sold  orders product_id                                product_name       category   revenue
+        322     148 prod_01551 Automated 4Thgeneration Process Improvement     Spence PLC  23757.16
+        317     151 prod_02892       Customer-Focused Modular Service-Desk  King-Odonnell 119800.64
+        317     160 prod_01007          User-Centric Multimedia Capability  King-Odonnell 154245.86
+        317     149 prod_00826                Configurable Static Hardware Skinner-Romero  54929.76
+        315     164 prod_00992             Polarized Optimal Orchestration    Baldwin Ltd 124544.70
+        312     154 prod_02188              Managed Dedicated Service-Desk Skinner-Romero 104738.40
+        311     152 prod_01190  Re-Engineered Solution-Oriented Projection       Bush Inc   8126.43
+        309     149 prod_03851             Optional Maximized Installation     Spence PLC  80667.54
+        309     156 prod_04081          Multi-Layered Bottom-Line Function  Carney-Santos 103471.74
+        307     152 prod_01737        De-Engineered 3Rdgeneration Matrices  Carney-Santos  40514.79
+        307     152 prod_02236                Balanced Maximized Algorithm   Owens-Daniel  52150.09
+        306     148 prod_01534         Upgradable Grid-Enabled Application   Phillips Inc  54969.84
+        306     141 prod_04073       Function-Based Bi-Directional Circuit   Mitchell-Kim  87512.94
+        306     154 prod_00253          Synergistic Systematic Parallelism   Phillips Inc 166880.16
+        305     139 prod_03158             Managed Bandwidth-Monitored Hub Wright-Leblanc 170449.25
 
-users.purchase_summary written ($merge). Example document:
- {'_id': 'user_000000', 'geo': {'city': 'Mcintoshton', 'state': 'MO', 'country': 'ML'}, 'registration_date': datetime.datetime(2026, 5, 11, 8, 0, 34), 'last_active': datetime.datetime(2026, 8, 6, 12, 26, 3), 'purchase_summary': {'total_orders': 26, 'total_spent': 32055.53, 'total_discount': 2090.89, 'first_purchase': datetime.datetime(2026, 8, 18, 3, 34, 41), 'last_purchase': datetime.datetime(2026, 11, 3, 19, 26, 6), 'avg_order_value': 1232.9, 'days_since_last_purchase': 7, 'top_payment_method': 'bank_transfer'}}
+users.purchase_summary and users.preferences written ($merge). Example:
+ {'_id': 'user_000000', 'purchase_summary': {'total_orders': 26, 'total_spent': 32055.53, 'total_discount': 2090.89, 'first_purchase': datetime.datetime(2026, 8, 18, 3, 34, 41), 'last_purchase': datetime.datetime(2026, 11, 3, 19, 26, 6), 'avg_order_value': 1232.9, 'days_since_last_purchase': 8, 'top_payment_method': 'bank_transfer'}, 'preferences': {'favourite_category_id': 'cat_004', 'favourite_category_name': 'Kelly-Santiago', 'favourite_category_spent': 5439.08, 'categories_bought': 21}}
 
-[exit code 0 | 10.7 s | 2026-11-10 20:23:36]
+[exit code 0 | 19.4 s | 2026-11-11 10:33:22]

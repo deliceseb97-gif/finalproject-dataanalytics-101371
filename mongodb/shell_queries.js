@@ -5,8 +5,20 @@ db = db.getSiblingDB("ecommerce");
 print("--- collections and document counts");
 db.getCollectionNames().sort().forEach(c => print(`  ${c}: ${db[c].countDocuments()}`));
 
-print("--- user profile with the materialised purchase_summary (computed pattern, single _id read)");
+print("--- user profile with the embedded purchase_summary and preferences (single _id read)");
 printjson(db.users.findOne({_id: "user_000042"}));
+
+print("--- complete journey of one converted session: entry, referrer, device, every page, cart");
+db.sessions.aggregate([
+  {$match: {conversion_status: "converted"}},
+  {$limit: 1},
+  {$project: {_id: 1, user_id: 1, referrer: 1, device: "$device.type", duration_seconds: 1,
+              journey: {$map: {input: "$page_views", as: "p",
+                               in: {$concat: ["$$p.page_type",
+                                              {$cond: [{$ifNull: ["$$p.product_id", false]},
+                                                       {$concat: [" (", "$$p.product_id", ")"]}, ""]}]}}},
+              cart: 1}}
+]).forEach(printjson);
 
 print("--- latest order of that user (embedded line items; uses index user_id_1_timestamp_-1)");
 printjson(db.transactions.find({user_id: "user_000042"}).sort({timestamp: -1}).limit(1).toArray()[0]);

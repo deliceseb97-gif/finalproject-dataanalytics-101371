@@ -12,7 +12,7 @@ ecommerce>   categories: 25
   users: 10000
 
 ecommerce> 
-ecommerce> --- user profile with the materialised purchase_summary (computed pattern, single _id read)
+ecommerce> --- user profile with the embedded purchase_summary and preferences (single _id read)
 
 ecommerce> {
   _id: 'user_000042',
@@ -30,9 +30,51 @@ ecommerce> {
     first_purchase: ISODate('2026-08-13T02:08:01.000Z'),
     last_purchase: ISODate('2026-11-08T19:23:19.000Z'),
     avg_order_value: 1003.69,
-    days_since_last_purchase: Long('2'),
+    days_since_last_purchase: Long('3'),
     top_payment_method: 'credit_card'
+  },
+  preferences: {
+    favourite_category_id: 'cat_007',
+    favourite_category_name: 'Moore, Becker and Carlson',
+    favourite_category_spent: 2604.15,
+    categories_bought: 24
   }
+}
+
+ecommerce> 
+ecommerce> --- complete journey of one converted session: entry, referrer, device, every page, cart
+
+ecommerce> | | | | | | | | | {
+  _id: 'sess_c834654637',
+  user_id: 'user_007129',
+  duration_seconds: 3216,
+  referrer: 'direct',
+  cart: [
+    {
+      product_id: 'prod_01609',
+      quantity: 2,
+      price: 319.01
+    },
+    {
+      product_id: 'prod_04265',
+      quantity: 2,
+      price: 243.6
+    }
+  ],
+  device: 'mobile',
+  journey: [
+    'home',
+    'category_listing',
+    'product_detail (prod_04873)',
+    'search',
+    'product_detail (prod_01609)',
+    'cart',
+    'checkout',
+    'home',
+    'category_listing',
+    'product_detail (prod_04265)',
+    'cart'
+  ]
 }
 
 ecommerce> 
@@ -107,4 +149,4 @@ ecommerce>
 ecommerce> | | |   winning plan stage: IXSCAN, index: user_id_1_timestamp_-1, docs examined: 31, returned: 31, time: 0 ms
 
 ecommerce> 
-[exit code 0 | 1.4 s | 2026-11-10 20:23:51]
+[exit code 0 | 2.7 s | 2026-11-11 10:33:28]

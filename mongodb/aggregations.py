@@ -5,8 +5,9 @@
                                   $lookup on the category hierarchy, $setWindowFields rank)
   2. user_segmentation          - purchase-frequency / RFM segmentation per user, bucketed
                                   with $bucket; the per-user summary is $merge'd back into
-                                  users.purchase_summary (computed pattern)
-  3. product_popularity         - top-selling vs most-viewed products (sessions page_views
+                                  users.purchase_summary (computed pattern), and each user's
+                                  favourite category into users.preferences
+  3. product_popularity        - top-selling vs most-viewed products (sessions page_views
                                   joined to transactions with $lookup)
 
 Results are printed and written to output/results/mongo_*.csv.
@@ -114,6 +115,26 @@ MERGE_PURCHASE_SUMMARY = USER_SUMMARY_STAGES + [
     {"$merge": {"into": "users", "on": "_id", "whenMatched": "merge", "whenNotMatched": "discard"}},
 ]
 
+# Preferences: favourite category (by money spent) and number of categories bought from,
+# also stored on the user document so personalisation does not need to scan orders.
+MERGE_PREFERENCES = [
+    {"$unwind": "$items"},
+    {"$group": {"_id": {"user": "$user_id", "cat": "$items.category_id"},
+                "spent": {"$sum": "$items.subtotal"}, "units": {"$sum": "$items.quantity"}}},
+    {"$sort": {"spent": -1}},
+    {"$group": {"_id": "$_id.user",
+                "favourite_category_id": {"$first": "$_id.cat"},
+                "favourite_category_spent": {"$first": "$spent"},
+                "categories_bought": {"$sum": 1}}},
+    {"$lookup": {"from": "categories", "localField": "favourite_category_id", "foreignField": "_id", "as": "c"}},
+    {"$project": {"preferences": {
+        "favourite_category_id": "$favourite_category_id",
+        "favourite_category_name": {"$first": "$c.name"},
+        "favourite_category_spent": {"$round": ["$favourite_category_spent", 2]},
+        "categories_bought": "$categories_bought"}}},
+    {"$merge": {"into": "users", "on": "_id", "whenMatched": "merge", "whenNotMatched": "discard"}},
+]
+
 # ------------------------------------------------------------------ pipeline 3
 PRODUCT_POPULARITY = [
     {"$unwind": "$page_views"},
@@ -185,8 +206,9 @@ def main():
     run(db, "transactions", "product_popularity_top_selling", TOP_SELLING)
 
     db.transactions.aggregate(MERGE_PURCHASE_SUMMARY, allowDiskUse=True)
-    sample = db.users.find_one({"purchase_summary": {"$exists": True}})
-    print("\nusers.purchase_summary written ($merge). Example document:\n", sample)
+    db.transactions.aggregate(MERGE_PREFERENCES, allowDiskUse=True)
+    sample = db.users.find_one({"preferences": {"$exists": True}}, {"purchase_summary": 1, "preferences": 1})
+    print("\nusers.purchase_summary and users.preferences written ($merge). Example:\n", sample)
 
 
 if __name__ == "__main__":

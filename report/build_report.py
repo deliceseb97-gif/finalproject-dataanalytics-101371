@@ -191,8 +191,8 @@ story.append(table(wrap_rows([
      "The hierarchy is small (3-5 subcategories) and always read with its parent -> embedded; avg margin pre-computed for profit analytics."],
     ["products", "{_id, name, category:{category_id, name}, base_price, current_stock, is_active, price_history:[{price, date}], creation_date}",
      "Bounded price history (1-3 points) embedded; extended reference to the category (id + name) avoids a $lookup for listing pages. Indexed on category and (is_active, stock)."],
-    ["users", "{_id, geo:{city,state,country}, registration_date, last_active, purchase_summary:{total_orders, total_spent, avg_order_value, first/last_purchase, days_since_last_purchase, top_payment_method}}",
-     "Computed pattern: the purchase summary is materialised by an aggregation with $merge, so a profile page or CRM lookup is a single _id read instead of an aggregation over ~25 orders."],
+    ["users", "{_id, geo:{city,state,country}, registration_date, last_active, purchase_summary:{total_orders, total_spent, avg_order_value, first/last_purchase, days_since_last_purchase, top_payment_method}, preferences:{favourite_category_id/name, favourite_category_spent, categories_bought}}",
+     "Computed pattern: the purchase summary and preferences are materialised by aggregations ending in $merge, so a profile page, CRM lookup or personalisation is a single _id read instead of an aggregation over ~25 orders."],
     ["transactions", "{_id, session_id, user_id, timestamp, items:[{product_id, category_id, quantity, unit_price, subtotal}], subtotal, discount, total, payment_method, status}",
      "Line items are owned by the order and bounded -> embedded. category_id is denormalised into each item so revenue-by-category needs no join. Indexes: (user_id, timestamp), timestamp, items.product_id, session_id (sparse)."],
     ["sessions (sample)", "Full journey document: device, geo, referrer, page_views[], cart[], conversion_status",
@@ -203,8 +203,11 @@ story += [Spacer(1, 4), P(
     "$unwind items, $group by category and month, $lookup to the category hierarchy for the margin, estimated gross profit "
     "and a $setWindowFields $rank of categories inside each month; (2) <i>user segmentation</i> - $group per user "
     "(orders, spend, recency, favourite payment via $sortArray), $bucket by purchase frequency, and the same stages "
-    "ending in $merge to write <font face='Courier'>users.purchase_summary</font>; (3) <i>product popularity</i> - most-viewed "
-    "products from session page views joined with a correlated $lookup to their sales, plus top sellers. Excerpt of pipeline (1):"),
+    "ending in $merge to write <font face='Courier'>users.purchase_summary</font> (a second $merge stores each user's favourite "
+    "category in <font face='Courier'>users.preferences</font>); (3) <i>product popularity</i> - most-viewed "
+    "products from session page views joined with a correlated $lookup to their sales, plus top sellers. The sessions sample "
+    "also supports whole-journey questions: one document gives entry page, referrer, device, every page view and the cart "
+    "(mongodb/shell_queries.js). Excerpt of pipeline (1):"),
     code("""
 db.transactions.aggregate([
   {$unwind: "$items"},
@@ -269,7 +272,8 @@ story += [P("3. Spark processing pipelines (Part 2)", H1), P(
     "transaction_items, product_price_history, subcategories) with <font face='Courier'>posexplode</font> to keep event order; "
     "per-session features (page-type counts, cart value) are computed with higher-order functions (filter/aggregate) without "
     "exploding. Output: 10 snappy-Parquet tables, page_views partitioned by date. The JSON arrays need multiLine=true, which "
-    "makes each file a single task; converting once to Parquet removes that bottleneck for every later job. Runtime: ~3.4 min."),
+    "makes each file a single task; converting once to Parquet removes that bottleneck for every later job. "
+    f"Runtime: {float(log_value('01_spark_clean.log', r'exit code 0 [|] ([0-9.]+) s', 'nan')) / 60:.1f} min."),
     P("<b>02_recommendations.py</b> (required batch analysis). Market-basket rules for both \"users who bought X also bought Y\" "
       "(baskets = transactions) and \"products frequently viewed together\" (baskets = sessions). A self-join on the basket id with "
       "<font face='Courier'>a.product_id &lt; b.product_id</font> counts each unordered pair once (halving the shuffle); pairs are "
