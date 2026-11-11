@@ -29,6 +29,10 @@ orders over 90 days. The full write-up, with the design decisions, results and c
   MongoDB container uses port **27018** instead.
 - **Spark schema inference:** letting Spark guess the schema turned `cart_contents` (keys are product IDs)
   into thousands of columns, so I wrote explicit schemas and declared it as a map.
+- **No age data:** the brief gives "users by age group" as an example of segmentation, but the generated
+  users only have an ID, a location (city/state/country), a registration date and a last-active date.
+  There is no age or birth date, so I segmented customers by purchase frequency (MongoDB) and RFM scores
+  (Spark) instead. This is also explained in the report (sections 2.1, 7 and 8).
 - **One interesting finding:** 23% of the products sold out during the 90 days, and the site stopped
   showing them, which cost roughly $31.5M in sales. I only noticed it because the views-vs-sales chart
   split into two clusters.

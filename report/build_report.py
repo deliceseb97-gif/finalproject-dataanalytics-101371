@@ -201,7 +201,9 @@ story.append(table(wrap_rows([
 story += [Spacer(1, 4), P(
     "<b>Aggregation pipelines</b> (<font face='Courier'>mongodb/aggregations.py</font>): (1) <i>revenue analytics</i> - "
     "$unwind items, $group by category and month, $lookup to the category hierarchy for the margin, estimated gross profit "
-    "and a $setWindowFields $rank of categories inside each month; (2) <i>user segmentation</i> - $group per user "
+    "and a $setWindowFields $rank of categories inside each month; (2) <i>user segmentation</i> by purchasing frequency (the brief's other example, age group, is not possible: the "
+    "generated user records contain only user_id, city/state/country, registration_date and last_active, with no age or "
+    "birth date) - $group per user "
     "(orders, spend, recency, favourite payment via $sortArray), $bucket by purchase frequency, and the same stages "
     "ending in $merge to write <font face='Courier'>users.purchase_summary</font> (a second $merge stores each user's favourite "
     "category in <font face='Courier'>users.preferences</font>); (3) <i>product popularity</i> - most-viewed "
@@ -391,7 +393,7 @@ story += bullets([
     f"discounts (currently applied uniformly to {profile.discounted_orders / profile.transactions:.0%} of orders) should be "
     "steered towards high-margin categories.",
 ])
-story += figure("fig5_cohort_heatmap.png", "Revenue per cohort user by purchase month (Spark cohort analysis).", width=11 * cm)
+story += figure("fig5_cohort_heatmap.png", "Revenue per cohort user by purchase month (Spark cohort analysis).", width=10 * cm)
 coh_last_full = cohort[cohort.txn_month == "2026-10"] if cohort is not None else None
 story += bullets([
     "<b>No cohort effect.</b> Older and newer registration cohorts spend almost exactly the same per user each month "
@@ -407,7 +409,8 @@ if rec_b is not None and rec_v is not None:
         "uses view co-occurrence; in production a support threshold and a significance test would be applied.",
     ])
 if m_seg is not None:
-    story += figure("fig7_mongo_user_segments.png", "Purchase-frequency segments from the MongoDB $bucket pipeline.", width=11.5 * cm)
+    story += figure("fig7_mongo_user_segments.png", "Purchase-frequency segments and average spending per user (MongoDB $bucket pipeline). Segments use "
+                    "purchase frequency instead of age groups because the dataset has no age field.", width=11.5 * cm)
 if clv_dec is not None and clv_user is not None:
     top10, bottom10 = clv_dec.iloc[0], clv_dec.iloc[-1]
     corr = {c: clv_user[["clv_12m", c]].corr().iloc[0, 1]
@@ -453,6 +456,9 @@ story += [P("7. Methodology", H1)] + bullets([
     "not assign products to subcategories.",
     "Market-basket metrics follow the standard support / confidence / lift definitions with a minimum pair count of 3.",
     "Cohorts are defined by registration month; months_since_registration uses months_between on month-truncated dates.",
+    "Customer segmentation uses behaviour, not demographics: purchase-frequency buckets (MongoDB) and RFM quintiles (Spark). "
+    "The assignment suggests age groups as an example, but dataset_generator.py creates users without any age or date-of-birth "
+    "field (only geography and registration/activity dates), so an age-based segmentation could not be computed honestly.",
     "CLV uses a transparent heuristic (purchase rate x expected lifetime with exponential recency decay x AOV x margin) instead of a "
     "fitted BG/NBD model, which would be the next step with real, non-uniform data.",
 ])
@@ -461,15 +467,13 @@ story += [P("8. Limitations and future work", H1)] + bullets([
     "effect, almost no real product affinity and identical channel/device behaviour. Several 'flat' findings above are properties of "
     "the generator, not of customer behaviour; the pipeline itself is what transfers to real data.",
     "Generator quirks found during cleaning: products have no subcategory_id; session ids are truncated UUIDs (1 duplicate in 1M); "
-    "users have no age, so age-group segmentation is impossible (frequency/RFM segmentation was used instead); "
+    "users have no age (see Methodology); "
     f"{profile.orders_without_session / profile.transactions:.0%} of orders ({profile.orders_without_session:,}) are not linked to any "
     "session, which caps funnel-to-order attribution.",
     "Scale: 50% of the specified volume because of generator memory; HBase holds a 300k-session subset; MongoDB holds a 100k-session "
     "journey sample.",
-    "Integration uses client libraries (pymongo, happybase) rather than the MongoDB Spark Connector / HBase-Spark connector; on a "
-    "cluster the connectors would give partition-parallel reads.",
-    "Future work: Structured Streaming ingestion, ALS collaborative filtering (Spark MLlib) for recommendations, probabilistic CLV "
-    "(BG/NBD + Gamma-Gamma), and an interactive dashboard on top of the result tables.",
+    "<b>Future work:</b> MongoDB Spark / HBase-Spark connectors instead of client libraries (partition-parallel reads), "
+    "Structured Streaming ingestion, ALS recommendations (MLlib), probabilistic CLV (BG/NBD) and a dashboard.",
 ])
 
 story += [P("Appendix A - Repository layout and how to reproduce", H1), P(
