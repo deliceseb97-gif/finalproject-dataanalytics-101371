@@ -3,6 +3,9 @@
 **Author:** SEBAGANWA SHAMI DELICE (Student ID 101371)
 **Course:** Big Data Analytics, AUCA (Final Project, November 2026)
 
+> **📄 Technical report:** [open the PDF](report/Technical_Report.pdf) ·
+> [download it](https://github.com/deliceseb97-gif/finalproject-dataanalytics-101371/raw/main/report/Technical_Report.pdf)
+
 For this project I built a small analytics platform for an e-commerce business using three technologies,
 each for the job it does best:
 
