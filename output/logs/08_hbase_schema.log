@@ -1,0 +1,49 @@
+PS dataanalytics> docker exec -i auca-hbase hbase shell -n < hbase/schema.hbase
+Took 0.2800 seconds
+Took 0.0031 seconds
+Took 0.0027 seconds
+Took 0.0025 seconds
+Created table user_sessions
+Took 0.8256 seconds
+Hbase::Table - user_sessions
+Created table product_daily_metrics
+Took 0.7382 seconds
+Hbase::Table - product_daily_metrics
+Table user_sessions is ENABLED
+user_sessions
+COLUMN FAMILIES DESCRIPTION
+{NAME => 'c', VERSIONS => '1', EVICT_BLOCKS_ON_CLOSE => 'false', NEW_VERSION_BEHAVIOR => 'false', KEEP_DELETED_CELLS => 'FALSE', CACHE_DATA_ON_WRITE => 'false', DATA_BLOCK_ENCODING => 'NONE', TTL => 'FOREVER', MIN_VERSIONS => '0', REPLICATION_SCOPE => '0', BLOOMFILTER => 'ROW', CACHE_INDEX_ON_WRITE => 'false', IN_MEMORY => 'false', CACHE_BLOOMS_ON_WRITE => 'false', PREFETCH_BLOCKS_ON_OPEN => 'false', COMPRESSION => 'GZ', BLOCKCACHE => 'true', BLOCKSIZE => '65536'}
+{NAME => 'pv', VERSIONS => '1', EVICT_BLOCKS_ON_CLOSE => 'false', NEW_VERSION_BEHAVIOR => 'false', KEEP_DELETED_CELLS => 'FALSE', CACHE_DATA_ON_WRITE => 'false', DATA_BLOCK_ENCODING => 'FAST_DIFF', TTL => 'FOREVER', MIN_VERSIONS => '0', REPLICATION_SCOPE => '0', BLOOMFILTER => 'ROW', CACHE_INDEX_ON_WRITE => 'false', IN_MEMORY => 'false', CACHE_BLOOMS_ON_WRITE => 'false', PREFETCH_BLOCKS_ON_OPEN => 'false', COMPRESSION => 'GZ', BLOCKCACHE => 'true', BLOCKSIZE => '65536'}
+{NAME => 's', VERSIONS => '1', EVICT_BLOCKS_ON_CLOSE => 'false', NEW_VERSION_BEHAVIOR => 'false', KEEP_DELETED_CELLS => 'FALSE', CACHE_DATA_ON_WRITE => 'false', DATA_BLOCK_ENCODING => 'FAST_DIFF', TTL => 'FOREVER', MIN_VERSIONS => '0', REPLICATION_SCOPE => '0', BLOOMFILTER => 'ROW', CACHE_INDEX_ON_WRITE => 'false', IN_MEMORY => 'false', CACHE_BLOOMS_ON_WRITE => 'false', PREFETCH_BLOCKS_ON_OPEN => 'false', COMPRESSION => 'GZ', BLOCKCACHE => 'true', BLOCKSIZE => '65536'}
+3 row(s)
+Took 0.0722 seconds
+
+Table product_daily_metrics is ENABLED
+product_daily_metrics
+COLUMN FAMILIES DESCRIPTION
+{NAME => 'm', VERSIONS => '1', EVICT_BLOCKS_ON_CLOSE => 'false', NEW_VERSION_BEHAVIOR => 'false', KEEP_DELETED_CELLS => 'FALSE', CACHE_DATA_ON_WRITE => 'false', DATA_BLOCK_ENCODING => 'FAST_DIFF', TTL => 'FOREVER', MIN_VERSIONS => '0', REPLICATION_SCOPE => '0', BLOOMFILTER => 'ROW', CACHE_INDEX_ON_WRITE => 'false', IN_MEMORY => 'false', CACHE_BLOOMS_ON_WRITE => 'false', PREFETCH_BLOCKS_ON_OPEN => 'false', COMPRESSION => 'GZ', BLOCKCACHE => 'true', BLOCKSIZE => '65536'}
+1 row(s)
+Took 0.0194 seconds
+
+ROW  COLUMN+CELL
+0 row(s)
+Took 0.0467 seconds
+
+ROW  COLUMN+CELL
+0 row(s)
+Took 0.0038 seconds
+
+ROW  COLUMN+CELL
+0 row(s)
+Took 0.0501 seconds
+
+ROW  COLUMN+CELL
+0 row(s)
+Took 0.0275 seconds
+
+0 row(s)
+Took 0.0362 seconds
+0
+2026-11-10 18:22:47,889 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+
+[exit code 0 | 6.6 s | 2026-11-10 20:22:50]

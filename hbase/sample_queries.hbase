@@ -1,0 +1,12 @@
+# HBase shell sample queries (run: docker exec -i auca-hbase hbase shell -n < hbase/sample_queries.hbase)
+list
+count 'user_sessions', INTERVAL => 100000, CACHE => 10000
+count 'product_daily_metrics', INTERVAL => 200000, CACHE => 10000
+# 3 most recent sessions of a user, summary family only (reverse-timestamp prefix scan)
+scan 'user_sessions', {ROWPREFIXFILTER => 'user_000042#', COLUMNS => ['s:start_time', 's:device_type', 's:conversion_status', 's:cart_value'], LIMIT => 3}
+# click-stream (pv family) and cart (c family) of the most recent session
+scan 'user_sessions', {ROWPREFIXFILTER => 'user_000042#', COLUMNS => ['pv', 'c'], LIMIT => 1}
+# converted sessions of the user (server-side filter)
+scan 'user_sessions', {ROWPREFIXFILTER => 'user_000042#', COLUMNS => ['s:start_time', 's:conversion_status'], FILTER => "SingleColumnValueFilter('s', 'conversion_status', =, 'binary:converted', true, true)"}
+# one week of daily metrics for one product (range scan on product_id#yyyyMMdd)
+scan 'product_daily_metrics', {STARTROW => 'prod_03462#20261101', STOPROW => 'prod_03462#20261108', COLUMNS => ['m:views', 'm:cart_adds', 'm:orders', 'm:revenue']}

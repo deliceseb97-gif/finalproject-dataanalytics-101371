@@ -1,0 +1,93 @@
+PS dataanalytics> docker exec -i auca-hbase hbase shell -n < hbase/sample_queries.hbase
+TABLE
+product_daily_metrics
+user_sessions
+2 row(s)
+Took 0.2868 seconds
+product_daily_metrics
+user_sessions
+Current count: 100000, row: user_003321#8207597416#sess_a46f2a754e
+Current count: 200000, row: user_006667#8212686172#sess_e9d8433482
+Current count: 300000, row: user_009999#8213301242#sess_26a0a3e5ee
+300000 row(s)
+Took 3.5435 seconds
+300000
+Current count: 200000, row: prod_02382#20260814
+Current count: 400000, row: prod_04756#20261105
+420391 row(s)
+Took 1.7458 seconds
+420391
+ROW  COLUMN+CELL
+ user_000042#8205834844#sess_9f41be5f33 column=s:cart_value, timestamp=1794334982650, value=128.98
+ user_000042#8205834844#sess_9f41be5f33 column=s:conversion_status, timestamp=1794334982650, value=abandoned
+ user_000042#8205834844#sess_9f41be5f33 column=s:device_type, timestamp=1794334982650, value=tablet
+ user_000042#8205834844#sess_9f41be5f33 column=s:start_time, timestamp=1794334982650, value=2026-11-08T19:12:35
+ user_000042#8206018692#sess_17f6936ce7 column=s:cart_value, timestamp=1794334985208, value=1511.61
+ user_000042#8206018692#sess_17f6936ce7 column=s:conversion_status, timestamp=1794334985208, value=abandoned
+ user_000042#8206018692#sess_17f6936ce7 column=s:device_type, timestamp=1794334985208, value=tablet
+ user_000042#8206018692#sess_17f6936ce7 column=s:start_time, timestamp=1794334985208, value=2026-11-06T16:08:27
+ user_000042#8206263067#sess_8952263ec5 column=s:cart_value, timestamp=1794334988006, value=0
+ user_000042#8206263067#sess_8952263ec5 column=s:conversion_status, timestamp=1794334988006, value=browsed
+ user_000042#8206263067#sess_8952263ec5 column=s:device_type, timestamp=1794334988006, value=tablet
+ user_000042#8206263067#sess_8952263ec5 column=s:start_time, timestamp=1794334988006, value=2026-11-03T20:15:32
+3 row(s)
+Took 0.0235 seconds
+
+ROW  COLUMN+CELL
+ user_000042#8205834844#sess_9f41be5f33 column=c:prod_00499, timestamp=1794334982650, value=1|128.98
+ user_000042#8205834844#sess_9f41be5f33 column=pv:000, timestamp=1794334982650, value=2026-11-08T19:12:35|search|||436
+ user_000042#8205834844#sess_9f41be5f33 column=pv:001, timestamp=1794334982650, value=2026-11-08T19:19:51|search|||56
+ user_000042#8205834844#sess_9f41be5f33 column=pv:002, timestamp=1794334982650, value=2026-11-08T19:20:47|search|||58
+ user_000042#8205834844#sess_9f41be5f33 column=pv:003, timestamp=1794334982650, value=2026-11-08T19:21:45|category_listing||cat_009|96
+ user_000042#8205834844#sess_9f41be5f33 column=pv:004, timestamp=1794334982650, value=2026-11-08T19:23:21|product_detail|prod_03462|cat_011|1033
+ user_000042#8205834844#sess_9f41be5f33 column=pv:005, timestamp=1794334982650, value=2026-11-08T19:40:34|category_listing||cat_001|87
+ user_000042#8205834844#sess_9f41be5f33 column=pv:006, timestamp=1794334982650, value=2026-11-08T19:42:01|product_detail|prod_01415|cat_021|45
+ user_000042#8205834844#sess_9f41be5f33 column=pv:007, timestamp=1794334982650, value=2026-11-08T19:42:46|product_detail|prod_00499|cat_015|271
+1 row(s)
+Took 0.0139 seconds
+
+ROW  COLUMN+CELL
+ user_000042#8209556702#sess_f796c67580 column=s:conversion_status, timestamp=1794335013857, value=converted
+ user_000042#8209556702#sess_f796c67580 column=s:start_time, timestamp=1794335013857, value=2026-09-26T17:21:37
+ user_000042#8209957091#sess_ee2bd52831 column=s:conversion_status, timestamp=1794335031884, value=converted
+ user_000042#8209957091#sess_ee2bd52831 column=s:start_time, timestamp=1794335031884, value=2026-09-22T02:08:28
+ user_000042#8211724996#sess_db3917a977 column=s:conversion_status, timestamp=1794335035218, value=converted
+ user_000042#8211724996#sess_db3917a977 column=s:start_time, timestamp=1794335035218, value=2026-09-01T15:03:23
+3 row(s)
+Took 0.0236 seconds
+
+ROW  COLUMN+CELL
+ prod_03462#20261101 column=m:cart_adds, timestamp=1794335087221, value=3
+ prod_03462#20261101 column=m:orders, timestamp=1794335087221, value=0
+ prod_03462#20261101 column=m:revenue, timestamp=1794335087221, value=0.0
+ prod_03462#20261101 column=m:views, timestamp=1794335087221, value=8
+ prod_03462#20261102 column=m:cart_adds, timestamp=1794335081879, value=4
+ prod_03462#20261102 column=m:orders, timestamp=1794335081879, value=1
+ prod_03462#20261102 column=m:revenue, timestamp=1794335081879, value=501.98
+ prod_03462#20261102 column=m:views, timestamp=1794335081879, value=14
+ prod_03462#20261103 column=m:cart_adds, timestamp=1794335085551, value=6
+ prod_03462#20261103 column=m:orders, timestamp=1794335085551, value=2
+ prod_03462#20261103 column=m:revenue, timestamp=1794335085551, value=1254.95
+ prod_03462#20261103 column=m:views, timestamp=1794335085551, value=13
+ prod_03462#20261104 column=m:cart_adds, timestamp=1794335090186, value=6
+ prod_03462#20261104 column=m:orders, timestamp=1794335090186, value=2
+ prod_03462#20261104 column=m:revenue, timestamp=1794335090186, value=1254.95
+ prod_03462#20261104 column=m:views, timestamp=1794335090186, value=11
+ prod_03462#20261105 column=m:cart_adds, timestamp=1794335068364, value=2
+ prod_03462#20261105 column=m:orders, timestamp=1794335068364, value=0
+ prod_03462#20261105 column=m:revenue, timestamp=1794335068364, value=0.0
+ prod_03462#20261105 column=m:views, timestamp=1794335068364, value=11
+ prod_03462#20261106 column=m:cart_adds, timestamp=1794335072205, value=5
+ prod_03462#20261106 column=m:orders, timestamp=1794335072205, value=4
+ prod_03462#20261106 column=m:revenue, timestamp=1794335072205, value=2509.9
+ prod_03462#20261106 column=m:views, timestamp=1794335072205, value=15
+ prod_03462#20261107 column=m:cart_adds, timestamp=1794335091549, value=3
+ prod_03462#20261107 column=m:orders, timestamp=1794335091549, value=1
+ prod_03462#20261107 column=m:revenue, timestamp=1794335091549, value=250.99
+ prod_03462#20261107 column=m:views, timestamp=1794335091549, value=10
+7 row(s)
+Took 0.0262 seconds
+
+2026-11-10 18:25:26,289 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+
+[exit code 0 | 10.2 s | 2026-11-10 20:25:32]

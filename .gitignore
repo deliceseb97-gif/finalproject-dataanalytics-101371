@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+spark-warehouse/
+metastore_db/
+derby.log
+# generated data lives in C:/aucadata (DATA_DIR), never commit it
+*.parquet
+sessions_*.json
+# assignment brief (course material, not project source)
+AUCA Final Project Oct 2026.pdf

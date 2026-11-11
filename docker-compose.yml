@@ -1,0 +1,27 @@
+# Local infrastructure for the project.
+#   docker compose up -d
+# MongoDB  -> localhost:27018 (27017 is often taken by a locally installed MongoDB service)
+# HBase    -> Thrift on localhost:9090 (used by happybase), Master UI on http://localhost:16010
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: auca-mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  hbase:
+    image: harisekhon/hbase:2.1
+    container_name: auca-hbase
+    hostname: hbase
+    ports:
+      - "2181:2181"    # ZooKeeper
+      - "9090:9090"    # Thrift server (happybase)
+      - "16010:16010"  # HBase Master web UI
+    volumes:
+      - hbase-data:/hbase-data
+
+volumes:
+  mongo-data:
+  hbase-data:

@@ -1,0 +1,11 @@
+PS dataanalytics> ./.venv/Scripts/python mongodb/load_mongodb.py
+Loading C:/aucadata\raw into mongodb://127.0.0.1:27018/ecommerce
+  categories             25 documents
+  products            5,000 documents
+  users              10,000 documents
+  transactions      250,000 documents
+  sessions          100,000 documents
+Creating indexes ...
+Done in 14.6s
+
+[exit code 0 | 15.4 s | 2026-11-10 20:23:14]

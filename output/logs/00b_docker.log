@@ -1,0 +1,6 @@
+PS dataanalytics> docker ps --format table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}
+NAMES        IMAGE                  STATUS          PORTS
+auca-mongo   mongo:7.0              Up 7 minutes    0.0.0.0:27018->27017/tcp, [::]:27018->27017/tcp
+auca-hbase   harisekhon/hbase:2.1   Up 13 minutes   0.0.0.0:2181->2181/tcp, [::]:2181->2181/tcp, 0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp, 0.0.0.0:16010->16010/tcp, [::]:16010->16010/tcp
+
+[exit code 0 | 0.2 s | 2026-11-10 20:29:49]

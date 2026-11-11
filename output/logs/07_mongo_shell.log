@@ -1,0 +1,110 @@
+PS dataanalytics> docker exec -i auca-mongo mongosh ecommerce --quiet < mongodb/shell_queries.js
+ecommerce> 
+ecommerce> 
+ecommerce> ecommerce
+ecommerce> 
+ecommerce> --- collections and document counts
+
+ecommerce>   categories: 25
+  products: 5000
+  sessions: 100000
+  transactions: 250000
+  users: 10000
+
+ecommerce> 
+ecommerce> --- user profile with the materialised purchase_summary (computed pattern, single _id read)
+
+ecommerce> {
+  _id: 'user_000042',
+  geo: {
+    city: 'Lake Caitlintown',
+    state: 'PW',
+    country: 'PA'
+  },
+  registration_date: ISODate('2026-08-05T15:07:11.000Z'),
+  last_active: ISODate('2026-08-27T20:53:20.000Z'),
+  purchase_summary: {
+    total_orders: 31,
+    total_spent: 31114.47,
+    total_discount: 841.53,
+    first_purchase: ISODate('2026-08-13T02:08:01.000Z'),
+    last_purchase: ISODate('2026-11-08T19:23:19.000Z'),
+    avg_order_value: 1003.69,
+    days_since_last_purchase: Long('2'),
+    top_payment_method: 'credit_card'
+  }
+}
+
+ecommerce> 
+ecommerce> --- latest order of that user (embedded line items; uses index user_id_1_timestamp_-1)
+
+ecommerce> {
+  _id: 'txn_74d495f11ae2',
+  session_id: 'sess_cd3ba5d3eb',
+  user_id: 'user_000042',
+  timestamp: ISODate('2026-11-08T19:23:19.000Z'),
+  items: [
+    {
+      product_id: 'prod_03963',
+      quantity: 3,
+      unit_price: 408.95,
+      subtotal: 1226.85,
+      category_id: 'cat_017'
+    },
+    {
+      product_id: 'prod_02616',
+      quantity: 2,
+      unit_price: 324.55,
+      subtotal: 649.1,
+      category_id: 'cat_019'
+    },
+    {
+      product_id: 'prod_00968',
+      quantity: 1,
+      unit_price: 379.63,
+      subtotal: 379.63,
+      category_id: 'cat_018'
+    }
+  ],
+  subtotal: 2255.58,
+  discount: 0,
+  total: 2255.58,
+  payment_method: 'paypal',
+  status: 'completed'
+}
+
+ecommerce> 
+ecommerce> --- product with embedded price history and category reference
+
+ecommerce> {
+  _id: 'prod_00123',
+  name: 'Right-Sized 6Thgeneration Internet Solution',
+  category: {
+    category_id: 'cat_022',
+    name: 'Preston Ltd'
+  },
+  subcategory_id: null,
+  base_price: 204.28,
+  current_stock: 276,
+  is_active: true,
+  price_history: [
+    {
+      price: 204.24,
+      date: ISODate('2026-06-05T01:46:48.000Z')
+    },
+    {
+      price: 204.28,
+      date: ISODate('2026-06-20T16:39:58.000Z')
+    }
+  ],
+  creation_date: ISODate('2026-06-05T01:46:48.000Z')
+}
+
+ecommerce> 
+ecommerce> --- index use for the per-user order history query
+
+ecommerce> 
+ecommerce> | | |   winning plan stage: IXSCAN, index: user_id_1_timestamp_-1, docs examined: 31, returned: 31, time: 0 ms
+
+ecommerce> 
+[exit code 0 | 1.4 s | 2026-11-10 20:23:51]

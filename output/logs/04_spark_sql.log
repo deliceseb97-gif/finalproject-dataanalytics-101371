@@ -1,0 +1,141 @@
+PS dataanalytics> ./.venv/Scripts/python spark/04_spark_sql_analytics.py --with-stores
+
+=== A0_dataset_profile (1 rows)
+ users  products  inactive_products  sessions  page_views  transactions  orders_without_session  discounted_orders
+ 10000      5000                234    999999     9993670        250000                  124092              49329
+
+=== A1_daily_revenue (91 rows)
+  txn_date  orders    revenue  avg_order_value  discounts  revenue_7d_ma  dod_growth_pct
+2026-08-12     489  498364.97          1019.15   14897.38      498364.97             NaN
+2026-08-13    2817 2850960.73          1012.06   74491.39     1674662.85          472.06
+2026-08-14    2701 2681751.87           992.87   68479.71     2010359.19           -5.94
+2026-08-15    2728 2815894.24          1032.22   66399.86     2211742.95            5.00
+2026-08-16    2819 2854362.04          1012.54   72322.98     2340266.77            1.37
+2026-08-17    2740 2735142.54           998.23   70550.31     2406079.40           -4.18
+2026-08-18    2733 2737956.91          1001.81   66492.16     2453490.47            0.10
+2026-08-19    2676 2708004.38          1011.96   66526.31     2769153.24           -1.09
+2026-08-20    2843 2874897.02          1011.22   67153.13     2772572.71            6.16
+2026-08-21    2660 2677251.03          1006.49   71134.68     2771929.74           -6.87
+2026-08-22    2852 2891629.21          1013.90   72707.58     2782749.02            8.01
+2026-08-23    2758 2796722.00          1014.04   71798.91     2774514.73           -3.28
+
+=== A2_category_scorecard (25 rows)
+category_id              category_name     revenue  revenue_share_pct  revenue_rank  units  orders  buyers  revenue_per_order  avg_profit_margin  est_gross_profit  product_views  units_per_100_views
+    cat_004             Kelly-Santiago 12266058.73               4.72             1  47405   22976    8993             533.86             0.2060        2526808.10         154986                30.59
+    cat_005            Cameron-Parsons 12012516.34               4.63             2  44151   21464    8795             559.66             0.2750        3303441.99         148600                29.71
+    cat_014 Anderson, Walls and Duncan 11400446.90               4.39             3  45517   22063    8870             516.72             0.2450        2793109.49         152809                29.79
+    cat_018               Phillips Inc 10985575.30               4.23             4  43941   21332    8817             514.98             0.2480        2724422.67         147954                29.70
+    cat_021               Mitchell-Kim 10926901.43               4.21             5  41365   20115    8622             543.22             0.2175        2376601.06         140028                29.54
+    cat_010            Burns-Rodriguez 10916993.08               4.20             6  42304   20589    8706             530.23             0.1833        2001084.83         143127                29.56
+    cat_019                 Powell PLC 10889974.04               4.19             7  43831   21363    8733             509.76             0.2440        2657153.67         148323                29.55
+    cat_012              Carney-Santos 10829829.19               4.17             8  43977   21398    8842             506.11             0.2600        2815755.59         144391                30.46
+    cat_017                Hancock Inc 10820279.73               4.17             9  45405   22069    8909             490.29             0.2900        3137881.12         153965                29.49
+    cat_024 Patterson, Smith and Jones 10782320.11               4.15            10  41080   19746    8652             546.05             0.2700        2911226.43         134639                30.51
+    cat_006    Ellis, Baker and Wright 10591516.47               4.08            11  41361   20268    8652             522.57             0.2140        2266584.52         138535                29.86
+    cat_020 Brewer, Bryant and Hickman 10577687.01               4.07            12  45063   21796    8878             485.30             0.2680        2834820.12         151826                29.68
+
+=== A3_funnel_by_device_referrer (19 rows)
+device_type      referrer  sessions  viewed_product  added_to_cart  reached_checkout  converted  conversion_rate_pct  avg_duration_s
+        NaN           NaN    999999          987576         648933            436484     202360                20.24          1814.0
+    desktop           NaN    333084          328978         216430            145220      67376                20.23          1811.0
+    desktop     affiliate     66572           65740          43277             28912      13367                20.08          1806.0
+    desktop        direct     66705           65889          43339             29241      13632                20.44          1810.0
+    desktop         email     66814           65998          43356             29061      13389                20.04          1811.0
+    desktop search_engine     66400           65576          43281             28932      13585                20.46          1809.0
+    desktop        social     66593           65775          43177             29074      13403                20.13          1819.0
+     mobile           NaN    333027          328964         215705            145408      67256                20.20          1815.0
+     mobile     affiliate     66284           65478          42789             28876      13343                20.13          1817.0
+     mobile        direct     66593           65763          43158             29160      13399                20.12          1810.0
+     mobile         email     66900           66099          43257             29101      13411                20.05          1821.0
+     mobile search_engine     66563           65766          43228             29121      13550                20.36          1812.0
+
+=== A4_viewed_vs_sold (4,766 rows)
+product_id                               product_name                   category_name  current_price  is_active  current_stock  views  cart_adds  orders  units_sold   revenue  view_to_cart_pct  view_to_order_pct
+prod_03158            Managed Bandwidth-Monitored Hub                  Wright-Leblanc         558.85       True             50    823        246     139         305 170449.25             29.89              16.89
+prod_00253         Synergistic Systematic Parallelism                    Phillips Inc         545.36       True            500    855        278     154         306 166880.16             32.51              18.01
+prod_00154 Triple-Buffered Homogeneous Info-Mediaries                  Skinner-Romero         594.15       True            521    832        231     129         267 158638.05             27.76              15.50
+prod_04136                  Front-Line Hybrid Ability Rodriguez, Figueroa and Sanchez         532.70       True            297    863        261     152         295 157146.50             30.24              17.61
+prod_02908               Cloned Leadingedge Interface      Patterson, Smith and Jones         559.06       True            437    876        280     138         281 157095.86             31.96              15.75
+prod_04681                    Total Tertiary Forecast Rodriguez, Figueroa and Sanchez         579.15       True            425    869        247     131         270 156370.50             28.42              15.07
+prod_01652           Expanded Zero Tolerance Software                       Smith Ltd         561.35       True            609    897        261     132         278 156055.30             29.10              14.72
+prod_00923                    Total Coherent Database                     Hancock Inc         564.16       True            157    846        256     135         275 155144.00             30.26              15.96
+prod_01007         User-Centric Multimedia Capability                   King-Odonnell         486.58       True            398    838        251     160         317 154245.86             29.95              19.09
+prod_03061                 Synchronized Mobile Matrix                        Bush Inc         560.44       True            638    820        252     135         275 154121.00             30.73              16.46
+prod_02419     Team-Oriented Client-Server Monitoring      Anderson, Walls and Duncan         561.98       True            564    864        263     137         274 153982.52             30.44              15.86
+prod_03324                Mandatory Explicit Solution                    Phillips Inc         576.54       True            296    906        253     139         266 153359.64             27.92              15.34
+
+=== A5_weekday_hour (168 rows)
+weekday  weekday_num  hour  sessions  conversion_rate_pct
+    Sun            1     0      5877                20.54
+    Sun            1     1      6042                20.90
+    Sun            1     2      6051                20.49
+    Sun            1     3      5963                20.59
+    Sun            1     4      6159                19.76
+    Sun            1     5      6171                20.79
+    Sun            1     6      6212                20.07
+    Sun            1     7      5968                20.02
+    Sun            1     8      5978                19.84
+    Sun            1     9      5979                19.94
+    Sun            1    10      6029                19.57
+    Sun            1    11      6045                20.15
+Registered mongo_users (2,000 docs) and hbase_sessions (60,103 rows)
+
+=== B1_federated_mongo_hbase (2,000 rows)
+    user_id country  total_orders  total_spent  avg_order_value  hbase_sessions  avg_session_s  avg_pages  converted_sessions  session_conversion_pct  spend_last_30d
+user_001824      CH            48     46731.70           973.58              39         1878.0       11.1                  15                    38.5        15788.19
+user_000003      ME            36     44595.61          1238.77              35         1811.0        9.4                   6                    17.1        17252.92
+user_001490      GQ            43     43591.46          1013.75              38         1530.0       10.3                  11                    28.9         8655.60
+user_001373      IN            37     43587.68          1178.05              42         1815.0       10.3                  12                    28.6        12675.20
+user_001840      SL            39     43486.72          1115.04              42         1807.0       10.0                  12                    28.6        24286.31
+user_000765      PW            34     43439.99          1277.65              36         1517.0       11.2                   7                    19.4        17457.45
+user_001175      LY            39     43277.56          1109.68              36         1606.0       11.2                   6                    16.7        13407.23
+user_001270      MY            36     43060.57          1196.13              21         1822.0        9.9                   5                    23.8        15200.57
+user_001553      GT            38     43056.98          1133.08              23         1890.0       10.2                   6                    26.1        16544.36
+user_001827      MX            36     42864.26          1190.67              38         1777.0       10.2                   9                    23.7        10314.17
+user_000501      BZ            33     42293.03          1281.61              31         2113.0        9.7                   5                    16.1        19033.33
+user_001597      IT            34     42207.22          1241.39              34         1869.0        9.4                   4                    11.8        14923.04
+SUCCESS: The process with PID 19656 (child process of PID 29240) has been terminated.
+SUCCESS: The process with PID 29240 (child process of PID 25460) has been terminated.
+SUCCESS: The process with PID 25460 (child process of PID 5632) has been terminated.
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+26/11/10 20:25:55 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:55 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:58 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:58 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:58 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:25:58 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+
+[exit code 0 | 85.9 s | 2026-11-10 20:27:07]

@@ -1,0 +1,16 @@
+PS dataanalytics> ./.venv/Scripts/python hbase/load_hbase.py --max-sessions 300000
+Loading up to 300,000 sessions into user_sessions ...
+  sessions_0.json: 100,000 sessions loaded (5,006 rows/s)
+  sessions_1.json: 200,000 sessions loaded (5,054 rows/s)
+  sessions_2.json: 300,000 sessions loaded (5,032 rows/s)
+  -> 300,000 rows
+Computing product_daily_metrics with Spark and loading ...
+  -> 420,391 rows
+Done in 113.4s
+SUCCESS: The process with PID 18056 (child process of PID 6708) has been terminated.
+SUCCESS: The process with PID 6708 (child process of PID 29580) has been terminated.
+SUCCESS: The process with PID 29580 (child process of PID 16108) has been terminated.
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+
+[exit code 0 | 114.2 s | 2026-11-10 20:24:53]

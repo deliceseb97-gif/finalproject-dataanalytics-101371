@@ -1,0 +1,51 @@
+antecedent,antecedent_name,consequent,consequent_name,consequent_category,pair_count,support,confidence,lift
+prod_02111,Business-Focused Even-Keeled Instruction Set,prod_04354,Customer-Focused Background Attitude,Mitchell-Kim,9,9.11322267855841e-06,0.010550996483001172,12.523931373433133
+prod_04354,Customer-Focused Background Attitude,prod_02111,Business-Focused Even-Keeled Instruction Set,Kelly-Santiago,9,9.11322267855841e-06,0.010817307692307692,12.52393137343313
+prod_02777,Virtual Fault-Tolerant Strategy,prod_03917,Devolved Bottom-Line Algorithm,"Moore, Becker and Carlson",8,8.100642380940808e-06,0.009603841536614645,11.224288058418633
+prod_03917,Devolved Bottom-Line Algorithm,prod_02777,Virtual Fault-Tolerant Strategy,Burns-Rodriguez,8,8.100642380940808e-06,0.009467455621301775,11.224288058418633
+prod_03201,Quality-Focused Contextually-Based System Engine,prod_02589,Compatible Mission-Critical Policy,Kelly-Santiago,8,8.100642380940808e-06,0.009523809523809525,11.06527731092437
+prod_02589,Compatible Mission-Critical Policy,prod_03201,Quality-Focused Contextually-Based System Engine,Powell PLC,8,8.100642380940808e-06,0.009411764705882352,11.065277310924369
+prod_00035,Enhanced Tangible Model,prod_00154,Triple-Buffered Homogeneous Info-Mediaries,Skinner-Romero,8,8.100642380940808e-06,0.009111617312072893,10.8154021377256
+prod_00154,Triple-Buffered Homogeneous Info-Mediaries,prod_00035,Enhanced Tangible Model,"Patterson, Smith and Jones",8,8.100642380940808e-06,0.009615384615384616,10.8154021377256
+prod_03948,Future-Proofed Encompassing Forecast,prod_00891,Face-To-Face Heuristic Definition,Skinner-Romero,8,8.100642380940808e-06,0.009163802978235968,10.560037211241966
+prod_00891,Face-To-Face Heuristic Definition,prod_03948,Future-Proofed Encompassing Forecast,"Anderson, Walls and Duncan",8,8.100642380940808e-06,0.009334889148191364,10.560037211241966
+prod_03441,Grass-Roots Upward-Trending Project,prod_02961,Persistent Interactive Orchestration,"Ellis, Baker and Wright",8,8.100642380940808e-06,0.008879023307436182,10.476356417998321
+prod_02961,Persistent Interactive Orchestration,prod_03441,Grass-Roots Upward-Trending Project,Burns-Rodriguez,8,8.100642380940808e-06,0.009557945041816009,10.47635641799832
+prod_02635,Multi-Lateral Executive Initiative,prod_03931,Virtual Asymmetric Matrices,"Anderson, Walls and Duncan",8,8.100642380940808e-06,0.008998875140607425,10.443094143196848
+prod_03931,Virtual Asymmetric Matrices,prod_02635,Multi-Lateral Executive Initiative,Hancock Inc,8,8.100642380940808e-06,0.009400705052878966,10.443094143196847
+prod_03823,Inverse Empowering Infrastructure,prod_04453,Ameliorated Next Generation Website,Powell PLC,8,8.100642380940808e-06,0.0091324200913242,10.39050564989584
+prod_04453,Ameliorated Next Generation Website,prod_03823,Inverse Empowering Infrastructure,"Anderson, Walls and Duncan",8,8.100642380940808e-06,0.009216589861751152,10.39050564989584
+prod_00657,Centralized Non-Volatile Hardware,prod_02822,Progressive Context-Sensitive Firmware,Kelly-Santiago,8,8.100642380940808e-06,0.008888888888888889,10.255202492211838
+prod_02822,Progressive Context-Sensitive Firmware,prod_00657,Centralized Non-Volatile Hardware,"Brewer, Bryant and Hickman",8,8.100642380940808e-06,0.009345794392523364,10.255202492211838
+prod_03153,Decentralized Next Generation Internet Solution,prod_01603,Pre-Emptive Attitude-Oriented Ability,King-Odonnell,8,8.100642380940808e-06,0.009163802978235968,10.249096138204264
+prod_01603,Pre-Emptive Attitude-Oriented Ability,prod_03153,Decentralized Next Generation Internet Solution,Kelly-Santiago,8,8.100642380940808e-06,0.009060022650056626,10.249096138204264
+prod_02597,Object-Based Interactive Software,prod_00113,Adaptive Incremental Knowledge User,"Patterson, Smith and Jones",8,8.100642380940808e-06,0.008385744234800839,9.443055585436344
+prod_00113,Adaptive Incremental Knowledge User,prod_02597,Object-Based Interactive Software,Mitchell-Kim,8,8.100642380940808e-06,0.009122006841505131,9.443055585436344
+prod_03108,Proactive Eco-Centric Installation,prod_04115,Inverse Value-Added Strategy,"Ellis, Baker and Wright",8,8.100642380940808e-06,0.00881057268722467,9.356032400170527
+prod_04115,Inverse Value-Added Strategy,prod_03108,Proactive Eco-Centric Installation,"Patterson, Smith and Jones",8,8.100642380940808e-06,0.008602150537634409,9.356032400170527
+prod_00903,Pre-Emptive Zero Tolerance Task-Force,prod_01573,Public-Key Heuristic Groupware,Owens-Daniel,7,7.088062083323207e-06,0.008383233532934131,10.413937408202463
+prod_01573,Public-Key Heuristic Groupware,prod_00903,Pre-Emptive Zero Tolerance Task-Force,Hancock Inc,7,7.088062083323207e-06,0.00880503144654088,10.413937408202463
+prod_00182,Function-Based Systematic System Engine,prod_03015,Compatible Clear-Thinking Migration,Powell PLC,7,7.088062083323207e-06,0.008620689655172414,10.039606376057254
+prod_03015,Compatible Clear-Thinking Migration,prod_00182,Function-Based Systematic System Engine,Owens-Daniel,7,7.088062083323207e-06,0.008254716981132075,10.039606376057254
+prod_03280,Organized Systematic Local Area Network,prod_02552,Re-Contextualized Leadingedge Complexity,Carney-Santos,7,7.088062083323207e-06,0.00847457627118644,10.035117668577003
+prod_02552,Re-Contextualized Leadingedge Complexity,prod_03280,Organized Systematic Local Area Network,Spence PLC,7,7.088062083323207e-06,0.008393285371702638,10.035117668577001
+prod_00942,Open-Architected Logistical Flexibility,prod_02147,Seamless Exuding Instruction Set,Rodriguez-Graham,7,7.088062083323207e-06,0.008187134502923977,9.981996967727962
+prod_02147,Seamless Exuding Instruction Set,prod_00942,Open-Architected Logistical Flexibility,"Patterson, Smith and Jones",7,7.088062083323207e-06,0.008641975308641974,9.981996967727962
+prod_03802,Proactive Asymmetric Architecture,prod_03806,Centralized Multi-Tasking Instruction Set,Bush Inc,7,7.088062083323207e-06,0.008674101610904586,9.949285217759241
+prod_03806,Centralized Multi-Tasking Instruction Set,prod_03802,Proactive Asymmetric Architecture,Wright-Leblanc,7,7.088062083323207e-06,0.008130081300813009,9.949285217759241
+prod_03600,Down-Sized Bandwidth-Monitored Methodology,prod_03908,Proactive Discrete Structure,"Ellis, Baker and Wright",7,7.088062083323207e-06,0.008547008547008548,9.942073631119568
+prod_03908,Proactive Discrete Structure,prod_03600,Down-Sized Bandwidth-Monitored Methodology,Powell PLC,7,7.088062083323207e-06,0.008244994110718492,9.942073631119566
+prod_04967,Monitored Next Generation Project,prod_04048,Profound Didactic Product,Bush Inc,7,7.088062083323207e-06,0.00849514563106796,9.812399931868507
+prod_04048,Profound Didactic Product,prod_04967,Monitored Next Generation Project,"Anderson, Walls and Duncan",7,7.088062083323207e-06,0.008187134502923977,9.812399931868507
+prod_02823,Reverse-Engineered Intangible Focus Group,prod_01761,Devolved Modular Task-Force,Spence PLC,7,7.088062083323207e-06,0.008274231678486997,9.809643006138625
+prod_01761,Devolved Modular Task-Force,prod_02823,Reverse-Engineered Intangible Focus Group,Carney-Santos,7,7.088062083323207e-06,0.008403361344537815,9.809643006138625
+prod_00667,Team-Oriented Holistic Knowledgebase,prod_04013,Visionary Bandwidth-Monitored Flexibility,"Brewer, Bryant and Hickman",7,7.088062083323207e-06,0.00823529411764706,9.786978126990869
+prod_04013,Visionary Bandwidth-Monitored Flexibility,prod_00667,Team-Oriented Holistic Knowledgebase,Spence PLC,7,7.088062083323207e-06,0.00842358604091456,9.786978126990867
+prod_01372,Expanded Asymmetric Conglomeration,prod_00630,Enterprise-Wide High-Level Graphic Interface,"Moore, Becker and Carlson",7,7.088062083323207e-06,0.008706467661691543,9.748637763563137
+prod_00630,Enterprise-Wide High-Level Graphic Interface,prod_01372,Expanded Asymmetric Conglomeration,"Anderson, Walls and Duncan",7,7.088062083323207e-06,0.007936507936507936,9.748637763563135
+prod_03204,Function-Based Uniform Hub,prod_01978,Profit-Focused 5Thgeneration Workforce,Owens-Daniel,7,7.088062083323207e-06,0.008206330597889801,9.740835512670214
+prod_01978,Profit-Focused 5Thgeneration Workforce,prod_03204,Function-Based Uniform Hub,Spence PLC,7,7.088062083323207e-06,0.008413461538461538,9.740835512670213
+prod_00862,Pre-Emptive Radical Knowledge User,prod_01856,Automated Even-Keeled Artificial Intelligence,Kelly-Santiago,7,7.088062083323207e-06,0.008706467661691543,9.693684901310808
+prod_01856,Automated Even-Keeled Artificial Intelligence,prod_00862,Pre-Emptive Radical Knowledge User,Kelly-Santiago,7,7.088062083323207e-06,0.007891770011273957,9.693684901310807
+prod_00308,Focused National Encoding,prod_04747,Reverse-Engineered Explicit Protocol,Carney-Santos,7,7.088062083323207e-06,0.00842358604091456,9.684437029036365
+prod_04747,Reverse-Engineered Explicit Protocol,prod_00308,Focused National Encoding,Smith Ltd,7,7.088062083323207e-06,0.008149010477299184,9.684437029036365

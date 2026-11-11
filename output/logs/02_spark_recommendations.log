@@ -1,0 +1,59 @@
+PS dataanalytics> ./.venv/Scripts/python spark/02_recommendations.py
+[bought_together] baskets=250,000 products=4,766 rules(pair_count>=3)=188
+[viewed_together] baskets=987,576 products=4,766 rules(pair_count>=3)=544,966
+
+Top bought_together rules
++----------+----------------------------+----------+----------------------------+----------------------------+----------+-------+--------------------+------------------+
+|antecedent|             antecedent_name|consequent|             consequent_name|         consequent_category|pair_count|support|          confidence|              lift|
++----------+----------------------------+----------+----------------------------+----------------------------+----------+-------+--------------------+------------------+
+|prod_03541|Down-Sized Fresh-Thinking...|prod_02665|Advanced Coherent Knowled...|                Phillips Inc|         3| 1.2E-5| 0.05454545454545454|112.69722013523666|
+|prod_02665|Advanced Coherent Knowled...|prod_03541|Down-Sized Fresh-Thinking...|Rodriguez, Figueroa and S...|         3| 1.2E-5|0.024793388429752067|112.69722013523666|
+|prod_04072|Proactive Uniform Initiative|prod_03128|Operative Context-Sensiti...|             Cameron-Parsons|         3| 1.2E-5|0.041666666666666664| 75.48309178743962|
+|prod_03128|Operative Context-Sensiti...|prod_04072|Proactive Uniform Initiative|                 Preston Ltd|         3| 1.2E-5|0.021739130434782608|  75.4830917874396|
+|prod_00553|Streamlined Solution-Orie...|prod_04177|Fundamental Homogeneous C...|              Kelly-Santiago|         3| 1.2E-5|0.024390243902439025| 70.90187180941577|
+|prod_04177|Fundamental Homogeneous C...|prod_00553|Streamlined Solution-Orie...|  Anderson, Walls and Duncan|         3| 1.2E-5| 0.03488372093023256| 70.90187180941577|
+|prod_02514|Polarized Intangible Mode...|prod_04531|User-Centric Object-Orien...|                Mitchell-Kim|         3| 1.2E-5|0.027522935779816515| 60.89145084030203|
+|prod_02430|Progressive Upward-Trendi...|prod_02776|Mandatory Demand-Driven P...|              Skinner-Romero|         3| 1.2E-5|0.027522935779816515| 60.89145084030203|
+|prod_02776|Mandatory Demand-Driven P...|prod_02430|Progressive Upward-Trendi...|Rodriguez, Figueroa and S...|         3| 1.2E-5| 0.02654867256637168|60.891450840302014|
+|prod_04531|User-Centric Object-Orien...|prod_02514|Polarized Intangible Mode...|             Cameron-Parsons|         3| 1.2E-5| 0.02654867256637168|60.891450840302014|
++----------+----------------------------+----------+----------------------------+----------------------------+----------+-------+--------------------+------------------+
+only showing top 10 rows
+
++-----------------+-----------------+------------------+--------------+
+|        mean_lift|      median_lift|          max_lift|max_pair_count|
++-----------------+-----------------+------------------+--------------+
+|50.87312577077782|49.35509344564359|112.69722013523666|             3|
++-----------------+-----------------+------------------+--------------+
+
+
+Top viewed_together rules
++----------+----------------------------+----------+----------------------------+--------------------------+----------+--------------------+--------------------+------------------+
+|antecedent|             antecedent_name|consequent|             consequent_name|       consequent_category|pair_count|             support|          confidence|              lift|
++----------+----------------------------+----------+----------------------------+--------------------------+----------+--------------------+--------------------+------------------+
+|prod_02111|Business-Focused Even-Kee...|prod_04354|Customer-Focused Backgrou...|              Mitchell-Kim|         9| 9.11322267855841E-6|0.010550996483001172|12.523931373433133|
+|prod_04354|Customer-Focused Backgrou...|prod_02111|Business-Focused Even-Kee...|            Kelly-Santiago|         9| 9.11322267855841E-6|0.010817307692307692| 12.52393137343313|
+|prod_02777|Virtual Fault-Tolerant St...|prod_03917|Devolved Bottom-Line Algo...| Moore, Becker and Carlson|         8|8.100642380940808E-6|0.009603841536614645|11.224288058418633|
+|prod_03917|Devolved Bottom-Line Algo...|prod_02777|Virtual Fault-Tolerant St...|           Burns-Rodriguez|         8|8.100642380940808E-6|0.009467455621301775|11.224288058418633|
+|prod_03201|Quality-Focused Contextua...|prod_02589|Compatible Mission-Critic...|            Kelly-Santiago|         8|8.100642380940808E-6|0.009523809523809525| 11.06527731092437|
+|prod_02589|Compatible Mission-Critic...|prod_03201|Quality-Focused Contextua...|                Powell PLC|         8|8.100642380940808E-6|0.009411764705882352|11.065277310924369|
+|prod_00035|     Enhanced Tangible Model|prod_00154|Triple-Buffered Homogeneo...|            Skinner-Romero|         8|8.100642380940808E-6|0.009111617312072893|  10.8154021377256|
+|prod_00154|Triple-Buffered Homogeneo...|prod_00035|     Enhanced Tangible Model|Patterson, Smith and Jones|         8|8.100642380940808E-6|0.009615384615384616|  10.8154021377256|
+|prod_03948|Future-Proofed Encompassi...|prod_00891|Face-To-Face Heuristic De...|            Skinner-Romero|         8|8.100642380940808E-6|0.009163802978235968|10.560037211241966|
+|prod_00891|Face-To-Face Heuristic De...|prod_03948|Future-Proofed Encompassi...|Anderson, Walls and Duncan|         8|8.100642380940808E-6|0.009334889148191364|10.560037211241966|
++----------+----------------------------+----------+----------------------------+--------------------------+----------+--------------------+--------------------+------------------+
+only showing top 10 rows
+
++-----------------+-----------------+-----------------+--------------+
+|        mean_lift|      median_lift|         max_lift|max_pair_count|
++-----------------+-----------------+-----------------+--------------+
+|4.445829001160755|4.033995969718425|293.7174581144047|             9|
++-----------------+-----------------+-----------------+--------------+
+
+Per-product top-5 recommendations written.
+SUCCESS: The process with PID 28632 (child process of PID 22488) has been terminated.
+SUCCESS: The process with PID 22488 (child process of PID 29772) has been terminated.
+SUCCESS: The process with PID 29772 (child process of PID 24336) has been terminated.
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+
+[exit code 0 | 190.9 s | 2026-11-10 20:19:20]

@@ -1,0 +1,42 @@
+PS dataanalytics> ./.venv/Scripts/python spark/03_cohort_analysis.py
+Cohort sizes
++------------------+------------+
+|registration_month|cohort_users|
++------------------+------------+
+|           2026-02|         842|
+|           2026-03|        1780|
+|           2026-04|        1655|
+|           2026-05|        1743|
+|           2026-06|        1636|
+|           2026-07|        1663|
+|           2026-08|         681|
++------------------+------------+
+
+Revenue per cohort user (rows = registration month, columns = purchase month)
+txn_month           2026-08  2026-09  2026-10  2026-11
+registration_month                                    
+2026-02             5356.63  8254.59  9043.01  2699.17
+2026-03             5352.93  8551.66  8837.58  2813.23
+2026-04             5458.51  8422.41  8706.61  2792.30
+2026-05             5341.97  8400.75  8675.44  2787.89
+2026-06             5439.58  8471.13  8784.86  2745.31
+2026-07             5249.36  8487.28  8632.73  2765.25
+2026-08             5208.56  8378.85  8761.88  2669.98
+
+Retention rate (share of cohort that purchased in the month)
+txn_month           2026-08  2026-09  2026-10  2026-11
+registration_month                                    
+2026-02              0.9976   0.9988   1.0000   0.9335
+2026-03              0.9961   0.9994   1.0000   0.9393
+2026-04              0.9952   0.9988   1.0000   0.9462
+2026-05              0.9937   1.0000   0.9994   0.9334
+2026-06              0.9976   0.9994   1.0000   0.9407
+2026-07              0.9958   1.0000   1.0000   0.9411
+2026-08              0.9941   1.0000   1.0000   0.9310
+SUCCESS: The process with PID 16220 (child process of PID 10580) has been terminated.
+SUCCESS: The process with PID 10580 (child process of PID 4996) has been terminated.
+SUCCESS: The process with PID 4996 (child process of PID 10248) has been terminated.
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+
+[exit code 0 | 13.5 s | 2026-11-10 20:19:35]

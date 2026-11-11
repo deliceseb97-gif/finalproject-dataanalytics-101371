@@ -1,0 +1,55 @@
+# PART 1.2 - HBase schema (run with:  docker exec -i auca-hbase hbase shell < hbase/schema.hbase)
+#
+# Table 1: user_sessions  - time-series of a user's browsing sessions
+#   row key  : <user_id>#<reverse_ts>#<session_id>
+#              reverse_ts = 9999999999 - start_epoch_seconds (10 digits, zero padded)
+#              -> all sessions of a user are contiguous and sorted NEWEST FIRST, so
+#                 "last N sessions of user X" is a short prefix scan with a LIMIT and
+#                 "sessions of user X between t1 and t2" is a bounded range scan.
+#   families : s   session summary (fixed, small, read most often)
+#              pv  page views - one column per view, qualifier = 3-digit sequence number,
+#                  value = "timestamp|page_type|product_id|category_id|view_duration".
+#                  Sparse/variable width (4-16 columns per row); kept in its own family so
+#                  scans that only need the summary never read it from disk.
+#              c   cart contents - qualifier = product_id, value = "quantity|price" (sparse)
+#   pre-split on user_id ranges to spread writes over regions from the start.
+#
+# Table 2: product_daily_metrics - product performance over time
+#   row key  : <product_id>#<yyyyMMdd>   -> a product's history is one contiguous range scan
+#   family   : m  views, view_seconds, unique_sessions, cart_adds, cart_units,
+#                 orders, units_sold, revenue
+#
+# VERSIONS => 1 everywhere: history is modelled in the row key, not in cell versions.
+
+disable 'user_sessions' rescue nil
+drop 'user_sessions' rescue nil
+disable 'product_daily_metrics' rescue nil
+drop 'product_daily_metrics' rescue nil
+
+create 'user_sessions',
+  {NAME => 's',  VERSIONS => 1, BLOOMFILTER => 'ROW', DATA_BLOCK_ENCODING => 'FAST_DIFF', COMPRESSION => 'GZ'},
+  {NAME => 'pv', VERSIONS => 1, BLOOMFILTER => 'ROW', DATA_BLOCK_ENCODING => 'FAST_DIFF', COMPRESSION => 'GZ'},
+  {NAME => 'c',  VERSIONS => 1, BLOOMFILTER => 'ROW', COMPRESSION => 'GZ'},
+  SPLITS => ['user_002000', 'user_004000', 'user_006000', 'user_008000']
+
+create 'product_daily_metrics',
+  {NAME => 'm', VERSIONS => 1, BLOOMFILTER => 'ROW', DATA_BLOCK_ENCODING => 'FAST_DIFF', COMPRESSION => 'GZ'},
+  SPLITS => ['prod_01000', 'prod_02000', 'prod_03000', 'prod_04000']
+
+describe 'user_sessions'
+describe 'product_daily_metrics'
+
+# ---------------------------------------------------------------- sample queries
+# 5 most recent sessions of one user (prefix scan; newest first because of reverse_ts)
+scan 'user_sessions', {ROWPREFIXFILTER => 'user_000042#', COLUMNS => ['s'], LIMIT => 5}
+
+# only the page-view family of one user's sessions
+scan 'user_sessions', {ROWPREFIXFILTER => 'user_000042#', COLUMNS => ['pv'], LIMIT => 2}
+
+# sessions that ended in a purchase for one user
+scan 'user_sessions', {ROWPREFIXFILTER => 'user_000042#', COLUMNS => ['s:conversion_status', 's:start_time'], FILTER => "SingleColumnValueFilter('s', 'conversion_status', =, 'binary:converted')"}
+
+# daily performance of one product for a date range
+scan 'product_daily_metrics', {STARTROW => 'prod_00123#20260901', STOPROW => 'prod_00123#20261001'}
+
+count 'user_sessions', INTERVAL => 100000

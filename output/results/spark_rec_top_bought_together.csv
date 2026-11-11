@@ -1,0 +1,51 @@
+antecedent,antecedent_name,consequent,consequent_name,consequent_category,pair_count,support,confidence,lift
+prod_03541,Down-Sized Fresh-Thinking Adapter,prod_02665,Advanced Coherent Knowledgebase,Phillips Inc,3,1.2e-05,0.05454545454545454,112.69722013523666
+prod_02665,Advanced Coherent Knowledgebase,prod_03541,Down-Sized Fresh-Thinking Adapter,"Rodriguez, Figueroa and Sanchez",3,1.2e-05,0.024793388429752067,112.69722013523666
+prod_04072,Proactive Uniform Initiative,prod_03128,Operative Context-Sensitive Collaboration,Cameron-Parsons,3,1.2e-05,0.041666666666666664,75.48309178743962
+prod_03128,Operative Context-Sensitive Collaboration,prod_04072,Proactive Uniform Initiative,Preston Ltd,3,1.2e-05,0.021739130434782608,75.4830917874396
+prod_04177,Fundamental Homogeneous Collaboration,prod_00553,Streamlined Solution-Oriented Task-Force,"Anderson, Walls and Duncan",3,1.2e-05,0.03488372093023256,70.90187180941577
+prod_00553,Streamlined Solution-Oriented Task-Force,prod_04177,Fundamental Homogeneous Collaboration,Kelly-Santiago,3,1.2e-05,0.024390243902439025,70.90187180941577
+prod_02430,Progressive Upward-Trending Function,prod_02776,Mandatory Demand-Driven Parallelism,Skinner-Romero,3,1.2e-05,0.027522935779816515,60.89145084030203
+prod_02514,Polarized Intangible Moderator,prod_04531,User-Centric Object-Oriented Flexibility,Mitchell-Kim,3,1.2e-05,0.027522935779816515,60.89145084030203
+prod_04531,User-Centric Object-Oriented Flexibility,prod_02514,Polarized Intangible Moderator,Cameron-Parsons,3,1.2e-05,0.02654867256637168,60.891450840302014
+prod_02776,Mandatory Demand-Driven Parallelism,prod_02430,Progressive Upward-Trending Function,"Rodriguez, Figueroa and Sanchez",3,1.2e-05,0.02654867256637168,60.891450840302014
+prod_03079,Cloned Solution-Oriented Application,prod_00837,Networked Next Generation Infrastructure,Mitchell-Kim,3,1.2e-05,0.02702702702702703,60.87168249330412
+prod_00837,Networked Next Generation Infrastructure,prod_03079,Cloned Solution-Oriented Application,Kelly-Santiago,3,1.2e-05,0.02702702702702703,60.87168249330412
+prod_00402,Cross-Platform Actuating Frame,prod_02960,Customer-Focused Neutral Info-Mediaries,Wright-Leblanc,3,1.2e-05,0.02608695652173913,60.38647342995169
+prod_02960,Customer-Focused Neutral Info-Mediaries,prod_00402,Cross-Platform Actuating Frame,"Ellis, Baker and Wright",3,1.2e-05,0.027777777777777776,60.386473429951685
+prod_03898,Reverse-Engineered Systematic Time-Frame,prod_01540,Organized Homogeneous Service-Desk,"Brewer, Bryant and Hickman",3,1.2e-05,0.025210084033613446,59.45774536229586
+prod_01540,Organized Homogeneous Service-Desk,prod_03898,Reverse-Engineered Systematic Time-Frame,Mitchell-Kim,3,1.2e-05,0.02830188679245283,59.45774536229586
+prod_01941,Innovative Foreground Parallelism,prod_00390,Balanced Secondary Throughput,Phillips Inc,3,1.2e-05,0.02830188679245283,58.9622641509434
+prod_00390,Balanced Secondary Throughput,prod_01941,Innovative Foreground Parallelism,Preston Ltd,3,1.2e-05,0.025,58.9622641509434
+prod_03829,User-Centric Value-Added Framework,prod_01405,Monitored 5Thgeneration Circuit,King-Odonnell,3,1.2e-05,0.025210084033613446,58.902065499096835
+prod_01405,Monitored 5Thgeneration Circuit,prod_03829,User-Centric Value-Added Framework,"Rodriguez, Figueroa and Sanchez",3,1.2e-05,0.028037383177570093,58.90206549909683
+prod_03412,Persistent Reciprocal Projection,prod_02327,Fundamental Incremental Intranet,Mitchell-Kim,3,1.2e-05,0.02654867256637168,58.73600125303469
+prod_02327,Fundamental Incremental Intranet,prod_03412,Persistent Reciprocal Projection,Hancock Inc,3,1.2e-05,0.02654867256637168,58.73600125303469
+prod_00534,Managed Discrete Implementation,prod_02379,Total Content-Based Standardization,Preston Ltd,3,1.2e-05,0.024390243902439025,58.63039399624766
+prod_02379,Total Content-Based Standardization,prod_00534,Managed Discrete Implementation,Spence PLC,3,1.2e-05,0.028846153846153848,58.630393996247655
+prod_00707,Grass-Roots Attitude-Oriented Function,prod_00107,Vision-Oriented Multi-State Implementation,Baldwin Ltd,3,1.2e-05,0.02608695652173913,58.22981366459627
+prod_00107,Vision-Oriented Multi-State Implementation,prod_00707,Grass-Roots Attitude-Oriented Function,Hancock Inc,3,1.2e-05,0.026785714285714284,58.22981366459627
+prod_04569,Horizontal Context-Sensitive Middleware,prod_04236,Re-Engineered Multi-Tasking Contingency,Rodriguez-Graham,3,1.2e-05,0.026785714285714284,58.22981366459627
+prod_04236,Re-Engineered Multi-Tasking Contingency,prod_04569,Horizontal Context-Sensitive Middleware,Skinner-Romero,3,1.2e-05,0.02608695652173913,58.22981366459627
+prod_01392,Progressive Tertiary Info-Mediaries,prod_03187,Exclusive Context-Sensitive Frame,James LLC,3,1.2e-05,0.031578947368421054,57.20823798627003
+prod_03187,Exclusive Context-Sensitive Frame,prod_01392,Progressive Tertiary Info-Mediaries,Preston Ltd,3,1.2e-05,0.021739130434782608,57.20823798627002
+prod_00770,Multi-Tiered Zero Tolerance Structure,prod_04450,Horizontal Hybrid Complexity,Phillips Inc,3,1.2e-05,0.02631578947368421,57.20823798627002
+prod_04450,Horizontal Hybrid Complexity,prod_00770,Multi-Tiered Zero Tolerance Structure,Burns-Rodriguez,3,1.2e-05,0.02608695652173913,57.208237986270014
+prod_03590,Cross-Platform Composite Ability,prod_03961,Re-Contextualized Logistical Monitoring,Powell PLC,3,1.2e-05,0.025210084033613446,56.77946854417443
+prod_03961,Re-Contextualized Logistical Monitoring,prod_03590,Cross-Platform Composite Ability,"Ellis, Baker and Wright",3,1.2e-05,0.02702702702702703,56.77946854417443
+prod_02814,Programmable Zero-Defect Protocol,prod_00827,Focused Neutral Approach,Rodriguez-Graham,3,1.2e-05,0.025210084033613446,56.27250900360144
+prod_00827,Focused Neutral Approach,prod_02814,Programmable Zero-Defect Protocol,Rodriguez-Graham,3,1.2e-05,0.026785714285714284,56.272509003601435
+prod_02804,Phased Interactive Groupware,prod_00699,Sharable Radical Archive,Powell PLC,3,1.2e-05,0.025423728813559324,56.24718764061797
+prod_00699,Sharable Radical Archive,prod_02804,Phased Interactive Groupware,King-Odonnell,3,1.2e-05,0.02654867256637168,56.24718764061797
+prod_03476,Multi-Lateral Interactive Project,prod_00837,Networked Next Generation Infrastructure,Mitchell-Kim,3,1.2e-05,0.024793388429752067,55.840964931874026
+prod_00837,Networked Next Generation Infrastructure,prod_03476,Multi-Lateral Interactive Project,Skinner-Romero,3,1.2e-05,0.02702702702702703,55.840964931874026
+prod_04964,Front-Line Background Challenge,prod_02640,Stand-Alone Analyzing Support,Cameron-Parsons,3,1.2e-05,0.024793388429752067,55.840964931874026
+prod_02640,Stand-Alone Analyzing Support,prod_04964,Front-Line Background Challenge,"Patterson, Smith and Jones",3,1.2e-05,0.02702702702702703,55.840964931874026
+prod_00618,Expanded Multi-State Matrices,prod_04485,Up-Sized Scalable Interface,Powell PLC,3,1.2e-05,0.02586206896551724,55.7372175980975
+prod_04485,Up-Sized Scalable Interface,prod_00618,Expanded Multi-State Matrices,Kelly-Santiago,3,1.2e-05,0.02586206896551724,55.7372175980975
+prod_01831,Persistent Mobile Open Architecture,prod_03225,Visionary Disintermediate Hub,Preston Ltd,3,1.2e-05,0.02857142857142857,55.370985603543744
+prod_03225,Visionary Disintermediate Hub,prod_01831,Persistent Mobile Open Architecture,Carney-Santos,3,1.2e-05,0.023255813953488372,55.37098560354374
+prod_04491,Enterprise-Wide Directional Product,prod_00161,Self-Enabling Transitional Task-Force,Phillips Inc,3,1.2e-05,0.02564102564102564,55.260831122900086
+prod_00161,Self-Enabling Transitional Task-Force,prod_04491,Enterprise-Wide Directional Product,Kelly-Santiago,3,1.2e-05,0.02586206896551724,55.260831122900086
+prod_02224,Persevering Maximized Orchestration,prod_02432,Reactive Encompassing Portal,Hancock Inc,3,1.2e-05,0.024390243902439025,54.4425087108014
+prod_02432,Reactive Encompassing Portal,prod_02224,Persevering Maximized Orchestration,Carney-Santos,3,1.2e-05,0.026785714285714284,54.442508710801384

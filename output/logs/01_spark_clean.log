@@ -1,0 +1,21 @@
+PS dataanalytics> ./.venv/Scripts/python spark/01_clean_normalize.py
+Cleaning raw dataset from C:/aucadata\raw
+  wrote users                        10,000 rows
+  wrote categories                       25 rows
+  wrote subcategories                   109 rows
+  wrote products                      5,000 rows
+  wrote product_price_history         9,962 rows
+  wrote page_views                9,993,670 rows
+  wrote cart_items                1,036,150 rows
+  wrote sessions                    999,999 rows
+  wrote transaction_items           516,977 rows
+  wrote transactions                250,000 rows
+Transactions with subtotal - discount != total: 0
+Done.
+SUCCESS: The process with PID 5408 (child process of PID 21192) has been terminated.
+SUCCESS: The process with PID 21192 (child process of PID 12752) has been terminated.
+SUCCESS: The process with PID 12752 (child process of PID 23264) has been terminated.
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+
+[exit code 0 | 243.5 s | 2026-11-10 20:16:08]
