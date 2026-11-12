@@ -33,7 +33,7 @@ orders over 90 days. The full write-up, with the design decisions, results and c
   users only have an ID, a location (city/state/country), a registration date and a last-active date.
   There is no age or birth date, so I segmented customers by purchase frequency (MongoDB) and RFM scores
   (Spark) instead. This is also explained in the report (sections 2.1, 7 and 8).
-- **The "converted" flag is not reliable:** after comparing my results with a classmate's approach I checked
+- **The "converted" flag is not reliable:** when validating the funnel I checked
   the generator's `conversion_status` against the real orders. 76,452 sessions say "converted" but have no
   transaction, because the generator stops creating orders once its quota is full. I now count a purchase
   only when an order exists, which changed the purchase rate from 20% to 12.6%.
