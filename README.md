@@ -158,3 +158,9 @@ scan 'product_daily_metrics', {STARTROW => 'prod_00123#20260901', STOPROW => 'pr
 * The generator holds every session in memory, so the full 100% scale needs about 25 GB of RAM; 50% was used.
 * MongoDB is published on host port 27018 so it does not clash with a locally installed MongoDB service on 27017.
 * PySpark 3.5's `toPandas()` needs `distutils`, which Python 3.13 removed; `common.config.to_pandas` uses `collect()` instead.
+
+## Acknowledgements
+
+Thanks to a classmate whose report pointed out that the generator's `conversion_status` flag does not always
+match the real transactions. I verified this on my own data (76,452 sessions flagged "converted" without an
+order) and changed my analysis to count purchases from real orders.
