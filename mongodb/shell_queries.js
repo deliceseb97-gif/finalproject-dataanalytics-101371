@@ -26,6 +26,13 @@ printjson(db.transactions.find({user_id: "user_000042"}).sort({timestamp: -1}).l
 print("--- product with embedded price history and category reference");
 printjson(db.products.findOne({_id: "prod_00123"}));
 
+print("--- the same per-user order query WITHOUT the index (forced collection scan) vs WITH it");
+const q = {user_id: "user_000042"};
+const noIdx = db.transactions.find(q).sort({timestamp: -1}).hint({$natural: 1}).explain("executionStats").executionStats;
+const withIdx = db.transactions.find(q).sort({timestamp: -1}).hint("user_id_1_timestamp_-1").explain("executionStats").executionStats;
+print(`  without index: docs examined ${noIdx.totalDocsExamined}, returned ${noIdx.nReturned}, ${noIdx.executionTimeMillis} ms`);
+print(`  with index   : docs examined ${withIdx.totalDocsExamined}, returned ${withIdx.nReturned}, ${withIdx.executionTimeMillis} ms`);
+
 print("--- index use for the per-user order history query");
 const plan = db.transactions.find({user_id: "user_000042"}).sort({timestamp: -1}).explain("executionStats");
 print(`  winning plan stage: ${plan.queryPlanner.winningPlan.inputStage?.stage ?? plan.queryPlanner.winningPlan.stage}` +

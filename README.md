@@ -33,6 +33,10 @@ orders over 90 days. The full write-up, with the design decisions, results and c
   users only have an ID, a location (city/state/country), a registration date and a last-active date.
   There is no age or birth date, so I segmented customers by purchase frequency (MongoDB) and RFM scores
   (Spark) instead. This is also explained in the report (sections 2.1, 7 and 8).
+- **The "converted" flag is not reliable:** after comparing my results with a classmate's approach I checked
+  the generator's `conversion_status` against the real orders. 76,452 sessions say "converted" but have no
+  transaction, because the generator stops creating orders once its quota is full. I now count a purchase
+  only when an order exists, which changed the purchase rate from 20% to 12.6%.
 - **One interesting finding:** 23% of the products sold out during the 90 days, and the site stopped
   showing them, which cost roughly $31.5M in sales. I only noticed it because the views-vs-sales chart
   split into two clusters.
@@ -112,7 +116,9 @@ docker exec -i auca-hbase hbase shell -n < hbase/schema.hbase
 |---|---|---|
 | Dataset | 1,000,000 sessions, 9.99M page views, 250,000 transactions | generator + `spark/01_clean_normalize.py` |
 | Revenue | $253.2M over 90 days, AOV $1,013 | Spark SQL A1 |
-| Funnel | 99% view a product, 65% add to cart, 44% reach checkout, 20% purchase (54% checkout drop-out) | Spark SQL A3 |
+| Funnel (cumulative, purchase = real order) | 99% view a product, 65% add to cart, 29% reach checkout, 12.6% buy; 55% of carts never reach checkout and 56% of checkouts end without an order | Spark SQL A3 |
+| Data quality | 202,360 sessions are flagged "converted" but only 125,908 have an order (the generator's transaction quota filled up at session 630,000) | Spark SQL A0, CLV reconciliation |
+| MongoDB index | per-user order query: 250,000 documents examined without the index, 31 with it | `mongodb/shell_queries.js` |
 | Stock-outs | 1,094 products (23%) sold out; about $31.5M of revenue missed | Spark SQL A4 |
 | Most profitable category | Rodriguez-Graham (36% margin), despite rank 16 by revenue | Spark SQL A2 / MongoDB pipeline 1 |
 | CLV | top decile = 15.1% of predicted 12-month CLV; CLV vs orders r = 0.78, vs session conversion r = 0.24 | `integration/clv_integration.py` |

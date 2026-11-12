@@ -1,8 +1,8 @@
 PS dataanalytics> ./.venv/Scripts/python spark/04_spark_sql_analytics.py --with-stores
 
 === A0_dataset_profile (1 rows)
- users  products  inactive_products  sessions  page_views  transactions  orders_without_session  discounted_orders
- 10000      5000                234    999999     9993670        250000                  124092              49329
+ users  products  inactive_products  sessions  page_views  transactions  orders_without_session  discounted_orders  flagged_converted  sessions_with_order  converted_without_order
+ 10000      5000                234    999999     9993670        250000                  124092              49329             202360               125908                    76452
 
 === A1_daily_revenue (91 rows)
   txn_date  orders    revenue  avg_order_value  discounts  revenue_7d_ma  dod_growth_pct
@@ -35,19 +35,19 @@ category_id              category_name     revenue  revenue_share_pct  revenue_r
     cat_020 Brewer, Bryant and Hickman 10577687.01               4.07            12  45063   21796    8878             485.30             0.2680        2834820.12         151826                29.68
 
 === A3_funnel_by_device_referrer (19 rows)
-device_type      referrer  sessions  viewed_product  added_to_cart  reached_checkout  converted  conversion_rate_pct  avg_duration_s
-        NaN           NaN    999999          987576         648933            436484     202360                20.24          1814.0
-    desktop           NaN    333084          328978         216430            145220      67376                20.23          1811.0
-    desktop     affiliate     66572           65740          43277             28912      13367                20.08          1806.0
-    desktop        direct     66705           65889          43339             29241      13632                20.44          1810.0
-    desktop         email     66814           65998          43356             29061      13389                20.04          1811.0
-    desktop search_engine     66400           65576          43281             28932      13585                20.46          1809.0
-    desktop        social     66593           65775          43177             29074      13403                20.13          1819.0
-     mobile           NaN    333027          328964         215705            145408      67256                20.20          1815.0
-     mobile     affiliate     66284           65478          42789             28876      13343                20.13          1817.0
-     mobile        direct     66593           65763          43158             29160      13399                20.12          1810.0
-     mobile         email     66900           66099          43257             29101      13411                20.05          1821.0
-     mobile search_engine     66563           65766          43228             29121      13550                20.36          1812.0
+device_type      referrer  sessions  viewed_product  added_to_cart  reached_checkout  purchased  flagged_converted  conversion_rate_pct  avg_duration_s
+        NaN           NaN    999999          987576         648933            289390     125908             202360                12.59          1814.0
+    desktop           NaN    333084          328978         216430             96286      41878              67376                12.57          1811.0
+    desktop     affiliate     66572           65740          43277             19234       8273              13367                12.43          1806.0
+    desktop        direct     66705           65889          43339             19434       8520              13632                12.77          1810.0
+    desktop         email     66814           65998          43356             19191       8334              13389                12.47          1811.0
+    desktop search_engine     66400           65576          43281             19276       8394              13585                12.64          1809.0
+    desktop        social     66593           65775          43177             19151       8357              13403                12.55          1819.0
+     mobile           NaN    333027          328964         215705             96172      41678              67256                12.51          1815.0
+     mobile     affiliate     66284           65478          42789             19085       8349              13343                12.60          1817.0
+     mobile        direct     66593           65763          43158             19340       8337              13399                12.52          1810.0
+     mobile         email     66900           66099          43257             19189       8262              13411                12.35          1821.0
+     mobile search_engine     66563           65766          43228             19243       8354              13550                12.55          1812.0
 
 === A4_viewed_vs_sold (4,766 rows)
 product_id                               product_name                   category_name  current_price  is_active  current_stock  views  cart_adds  orders  units_sold   revenue  view_to_cart_pct  view_to_order_pct
@@ -66,76 +66,72 @@ prod_03324                Mandatory Explicit Solution                    Phillip
 
 === A5_weekday_hour (168 rows)
 weekday  weekday_num  hour  sessions  conversion_rate_pct
-    Sun            1     0      5877                20.54
-    Sun            1     1      6042                20.90
-    Sun            1     2      6051                20.49
-    Sun            1     3      5963                20.59
-    Sun            1     4      6159                19.76
-    Sun            1     5      6171                20.79
-    Sun            1     6      6212                20.07
-    Sun            1     7      5968                20.02
-    Sun            1     8      5978                19.84
-    Sun            1     9      5979                19.94
-    Sun            1    10      6029                19.57
-    Sun            1    11      6045                20.15
-Registered mongo_users (2,000 docs) and hbase_sessions (60,103 rows)
+    Sun            1     0      5877                13.08
+    Sun            1     1      6042                13.11
+    Sun            1     2      6051                12.76
+    Sun            1     3      5963                12.64
+    Sun            1     4      6159                11.97
+    Sun            1     5      6171                13.42
+    Sun            1     6      6212                12.69
+    Sun            1     7      5968                12.08
+    Sun            1     8      5978                12.63
+    Sun            1     9      5979                12.33
+    Sun            1    10      6029                11.99
+    Sun            1    11      6045                12.84
+Registered mongo_users (2,000 docs), mongo_order_sessions (25,282) and hbase_sessions (60,103 rows)
 
 === B1_federated_mongo_hbase (2,000 rows)
-    user_id country  total_orders  total_spent  avg_order_value  hbase_sessions  avg_session_s  avg_pages  converted_sessions  session_conversion_pct  spend_last_30d
-user_001824      CH            48     46731.70           973.58              39         1878.0       11.1                  15                    38.5        15788.19
-user_000003      ME            36     44595.61          1238.77              35         1811.0        9.4                   6                    17.1        17252.92
-user_001490      GQ            43     43591.46          1013.75              38         1530.0       10.3                  11                    28.9         8655.60
-user_001373      IN            37     43587.68          1178.05              42         1815.0       10.3                  12                    28.6        12675.20
-user_001840      SL            39     43486.72          1115.04              42         1807.0       10.0                  12                    28.6        24286.31
-user_000765      PW            34     43439.99          1277.65              36         1517.0       11.2                   7                    19.4        17457.45
-user_001175      LY            39     43277.56          1109.68              36         1606.0       11.2                   6                    16.7        13407.23
-user_001270      MY            36     43060.57          1196.13              21         1822.0        9.9                   5                    23.8        15200.57
-user_001553      GT            38     43056.98          1133.08              23         1890.0       10.2                   6                    26.1        16544.36
-user_001827      MX            36     42864.26          1190.67              38         1777.0       10.2                   9                    23.7        10314.17
-user_000501      BZ            33     42293.03          1281.61              31         2113.0        9.7                   5                    16.1        19033.33
-user_001597      IT            34     42207.22          1241.39              34         1869.0        9.4                   4                    11.8        14923.04
-SUCCESS: The process with PID 19656 (child process of PID 29240) has been terminated.
-SUCCESS: The process with PID 29240 (child process of PID 25460) has been terminated.
-SUCCESS: The process with PID 25460 (child process of PID 5632) has been terminated.
+    user_id country  total_orders  total_spent  avg_order_value  hbase_sessions  avg_session_s  avg_pages  purchase_sessions  session_conversion_pct  spend_last_30d
+user_001824      CH            48     46731.70           973.58              39         1878.0       11.1                 15                    38.5        15788.19
+user_000003      ME            36     44595.61          1238.77              35         1811.0        9.4                  6                    17.1        17252.92
+user_001490      GQ            43     43591.46          1013.75              38         1530.0       10.3                 11                    28.9         8655.60
+user_001373      IN            37     43587.68          1178.05              42         1815.0       10.3                 12                    28.6        12675.20
+user_001840      SL            39     43486.72          1115.04              42         1807.0       10.0                 12                    28.6        24286.31
+user_000765      PW            34     43439.99          1277.65              36         1517.0       11.2                  7                    19.4        17457.45
+user_001175      LY            39     43277.56          1109.68              36         1606.0       11.2                  6                    16.7        13407.23
+user_001270      MY            36     43060.57          1196.13              21         1822.0        9.9                  5                    23.8        15200.57
+user_001553      GT            38     43056.98          1133.08              23         1890.0       10.2                  6                    26.1        16544.36
+user_001827      MX            36     42864.26          1190.67              38         1777.0       10.2                  9                    23.7        10314.17
+user_000501      BZ            33     42293.03          1281.61              31         2113.0        9.7                  5                    16.1        19033.33
+user_001597      IT            34     42207.22          1241.39              34         1869.0        9.4                  4                    11.8        14923.04
+SUCCESS: The process with PID 20096 (child process of PID 13900) has been terminated.
+SUCCESS: The process with PID 13900 (child process of PID 28384) has been terminated.
+SUCCESS: The process with PID 28384 (child process of PID 12476) has been terminated.
 Setting default log level to "WARN".
 To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
-26/11/10 20:25:55 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:55 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:56 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:57 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:58 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:58 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:58 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:25:58 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
-26/11/10 20:26:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:25 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:25 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:27 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:27 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:27 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:27 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:28 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:28 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:28 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:28 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:29 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:29 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:29 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:29 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:31 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:31 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:31 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:31 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:43 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:43 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:43 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:43 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:43 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:43 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:43 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:43 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:44 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:44 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:44 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:44 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:44 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:44 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:44 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/11/12 19:10:44 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
 
-[exit code 0 | 85.9 s | 2026-11-10 20:27:07]
+[exit code 0 | 157.7 s | 2026-11-12 19:12:28]

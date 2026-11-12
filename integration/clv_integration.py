@@ -8,8 +8,11 @@ Data sources
     MongoDB  users         -> profile + geo (document store, source of truth for customers)
     MongoDB  transactions  -> per-user order history, aggregated *inside* MongoDB ($group
                               pushdown) so only ~10k summary rows cross the network
-    HBase    user_sessions -> engagement (session count, duration, pages, conversion) read from
+    HBase    user_sessions -> engagement (session count, duration, pages, cart value) read from
                               the small 's' family only via a full scan with column pruning
+    MongoDB  transactions  -> the session_ids that really ended in an order; joined to the HBase
+                              sessions to get each user's true session conversion rate (the
+                              generator's 'converted' flag is not reliable, see report)
     Spark                   -> joins the three sources, computes RFM scores with window
                               functions (ntile), the CLV model and segment roll-ups
 
@@ -69,23 +72,29 @@ def extract_mongo(spark, db):
     orders_df = spark.createDataFrame(rows, "user_id string, orders long, revenue double, discount double, "
                                             "first_purchase timestamp, last_purchase timestamp, "
                                             "gross_margin double, top_category string")
-    print(f"MongoDB: {len(users):,} users, {len(rows):,} order summaries ({time.time() - t0:.1f}s)")
-    return users_df, orders_df
+    # Sessions that really produced an order (used to compute conversion from HBase sessions).
+    order_sessions = db.transactions.distinct("session_id", {"session_id": {"$ne": None}})
+    order_sessions_df = spark.createDataFrame([(sid,) for sid in order_sessions], "session_id string") \
+        .withColumn("purchased", F.lit(1))
+    print(f"MongoDB: {len(users):,} users, {len(rows):,} order summaries, "
+          f"{len(order_sessions):,} sessions with an order ({time.time() - t0:.1f}s)")
+    return users_df, orders_df, order_sessions_df
 
 
 def extract_hbase(spark):
-    """Scan only the session-summary columns; user_id is the row-key prefix."""
+    """Scan only the session-summary columns; user_id and session_id come from the row key."""
     t0 = time.time()
     table = happybase.Connection(HBASE_HOST, HBASE_PORT, timeout=300000).table("user_sessions")
     cols = [b"s:duration_seconds", b"s:num_page_views", b"s:num_products_viewed",
-            b"s:conversion_status", b"s:cart_value", b"s:start_time"]
+            b"s:cart_value", b"s:start_time", b"s:conversion_status"]
     rows = []
     for key, d in table.scan(columns=cols, batch_size=5000):
-        rows.append((key.split(b"#", 1)[0].decode(), int(d[cols[0]]), int(d[cols[1]]), int(d[cols[2]]),
-                     d[cols[3]].decode(), float(d[cols[4]]), d[cols[5]].decode()))
-    df = spark.createDataFrame(rows, "user_id string, duration_seconds long, num_page_views long, "
-                                     "num_products_viewed long, conversion_status string, cart_value double, "
-                                     "start_time string")
+        user_id, _, session_id = key.decode().split("#")  # user_id#reverse_ts#session_id
+        rows.append((user_id, session_id, int(d[cols[0]]), int(d[cols[1]]), int(d[cols[2]]),
+                     float(d[cols[3]]), d[cols[4]].decode(), d[cols[5]].decode()))
+    df = spark.createDataFrame(rows, "user_id string, session_id string, duration_seconds long, num_page_views long, "
+                                     "num_products_viewed long, cart_value double, start_time string, "
+                                     "conversion_status string")
     print(f"HBase: {len(rows):,} session rows ({time.time() - t0:.1f}s)")
     return df
 
@@ -94,26 +103,37 @@ def main():
     spark = get_spark("clv_integration")
     db = MongoClient(MONGO_URI)[MONGO_DB]
 
-    users_df, orders_df = extract_mongo(spark, db)
+    users_df, orders_df, order_sessions_df = extract_mongo(spark, db)
     sessions_df = extract_hbase(spark)
+
+    # HBase session x MongoDB order: a session converted only if an order references it.
+    sessions_df = sessions_df.join(F.broadcast(order_sessions_df), "session_id", "left").fillna(0, ["purchased"])
+    abandoned = (F.col("purchased") == 0) & (F.col("cart_value") > 0)
+
+    # Reconciliation: the generator's 'converted' flag (HBase) against real orders (MongoDB).
+    rec = sessions_df.agg(F.sum(F.when(F.col("conversion_status") == "converted", 1).otherwise(0)).alias("flagged"),
+                          F.sum("purchased").alias("with_order"),
+                          F.sum(F.when((F.col("conversion_status") == "converted") & (F.col("purchased") == 1), 1)
+                                .otherwise(0)).alias("both")).first()
+    print(f"Reconciliation (HBase sessions): flagged converted {rec.flagged:,}, with a MongoDB order {rec.with_order:,}, "
+          f"flagged and ordered {rec.both:,}")
 
     engagement = sessions_df.groupBy("user_id").agg(
         F.count("*").alias("sessions"),
         F.round(F.avg("duration_seconds"), 0).alias("avg_session_seconds"),
         F.round(F.avg("num_page_views"), 2).alias("avg_pages_per_session"),
         F.round(F.avg("num_products_viewed"), 2).alias("avg_products_viewed"),
-        F.sum(F.when(F.col("conversion_status") == "converted", 1).otherwise(0)).alias("converted_sessions"),
-        F.sum(F.when(F.col("conversion_status") == "abandoned", 1).otherwise(0)).alias("abandoned_sessions"),
-        F.round(F.sum(F.when(F.col("conversion_status") == "abandoned", F.col("cart_value")).otherwise(0)), 2)
-         .alias("abandoned_cart_value"),
-    ).withColumn("session_conversion_rate", F.round(F.col("converted_sessions") / F.col("sessions"), 4))
+        F.sum("purchased").alias("purchase_sessions"),
+        F.sum(F.when(abandoned, 1).otherwise(0)).alias("abandoned_sessions"),
+        F.round(F.sum(F.when(abandoned, F.col("cart_value")).otherwise(0)), 2).alias("abandoned_cart_value"),
+    ).withColumn("session_conversion_rate", F.round(F.col("purchase_sessions") / F.col("sessions"), 4))
 
     bounds = orders_df.agg(F.min("first_purchase").alias("t0"), F.max("last_purchase").alias("t1")).first()
     window_days = max((bounds.t1 - bounds.t0).days, 1)
 
     clv = (
         users_df.join(orders_df, "user_id", "left").join(engagement, "user_id", "left")
-        .fillna(0, subset=["orders", "revenue", "discount", "sessions", "converted_sessions",
+        .fillna(0, subset=["orders", "revenue", "discount", "sessions", "purchase_sessions",
                            "abandoned_sessions", "abandoned_cart_value"])
         .withColumn("recency_days", F.datediff(F.lit(bounds.t1), F.col("last_purchase")))
         .withColumn("avg_order_value", F.round(F.col("revenue") / F.greatest(F.col("orders"), F.lit(1)), 2))

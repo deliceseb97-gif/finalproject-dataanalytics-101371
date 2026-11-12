@@ -1,4 +1,4 @@
-user_id,country,total_orders,total_spent,avg_order_value,hbase_sessions,avg_session_s,avg_pages,converted_sessions,session_conversion_pct,spend_last_30d
+user_id,country,total_orders,total_spent,avg_order_value,hbase_sessions,avg_session_s,avg_pages,purchase_sessions,session_conversion_pct,spend_last_30d
 user_001824,CH,48,46731.7,973.58,39,1878.0,11.1,15,38.5,15788.19
 user_000003,ME,36,44595.61,1238.77,35,1811.0,9.4,6,17.1,17252.92
 user_001490,GQ,43,43591.46,1013.75,38,1530.0,10.3,11,28.9,8655.6

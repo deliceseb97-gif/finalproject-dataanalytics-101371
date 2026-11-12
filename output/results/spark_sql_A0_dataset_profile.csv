@@ -1,2 +1,2 @@
-users,products,inactive_products,sessions,page_views,transactions,orders_without_session,discounted_orders
-10000,5000,234,999999,9993670,250000,124092,49329
+users,products,inactive_products,sessions,page_views,transactions,orders_without_session,discounted_orders,flagged_converted,sessions_with_order,converted_without_order
+10000,5000,234,999999,9993670,250000,124092,49329,202360,125908,76452

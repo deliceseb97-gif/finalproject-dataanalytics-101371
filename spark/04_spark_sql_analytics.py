@@ -1,5 +1,9 @@
 """PART 2.2 - Spark SQL analytics.
 
+A session counts as a purchase only when a transaction is linked to it (view purchased_sessions).
+The generator's conversion_status = 'converted' flag is not used for that: it is also set when the
+transaction quota was already reached and no order was created (A0 measures the gap).
+
 Section A - complex SQL over the curated Parquet tables (registered as temp views):
     A1 daily revenue, 7-day moving average and day-over-day growth   (window functions)
     A2 category scorecard: revenue share, rank, estimated gross profit (CTEs + joins)
@@ -33,7 +37,11 @@ QUERIES = {
                (SELECT COUNT(*) FROM page_views)                              AS page_views,
                (SELECT COUNT(*) FROM transactions)                            AS transactions,
                (SELECT SUM(CASE WHEN is_session_linked THEN 0 ELSE 1 END) FROM transactions) AS orders_without_session,
-               (SELECT SUM(CASE WHEN discount > 0 THEN 1 ELSE 0 END) FROM transactions)     AS discounted_orders
+               (SELECT SUM(CASE WHEN discount > 0 THEN 1 ELSE 0 END) FROM transactions)     AS discounted_orders,
+               (SELECT COUNT(*) FROM sessions WHERE conversion_status = 'converted')       AS flagged_converted,
+               (SELECT COUNT(*) FROM purchased_sessions)                                    AS sessions_with_order,
+               (SELECT COUNT(*) FROM sessions s LEFT ANTI JOIN purchased_sessions p ON s.session_id = p.session_id
+                WHERE s.conversion_status = 'converted')                                    AS converted_without_order
     """,
     "A1_daily_revenue": """
         WITH daily AS (
@@ -83,15 +91,25 @@ QUERIES = {
         ORDER BY revenue DESC
     """,
     "A3_funnel_by_device_referrer": """
+        -- cumulative stages: each stage requires all previous ones
+        WITH s AS (
+            SELECT ss.*,
+                   num_product_detail_views > 0                     AS st_view,
+                   num_product_detail_views > 0 AND num_cart_items > 0 AS st_cart,
+                   num_product_detail_views > 0 AND num_cart_items > 0 AND num_checkout_views > 0 AS st_checkout,
+                   p.session_id IS NOT NULL                         AS st_purchase
+            FROM sessions ss LEFT JOIN purchased_sessions p ON ss.session_id = p.session_id
+        )
         SELECT device_type, referrer,
-               COUNT(*)                                                    AS sessions,
-               SUM(CASE WHEN num_product_detail_views > 0 THEN 1 ELSE 0 END) AS viewed_product,
-               SUM(CASE WHEN num_cart_items > 0 THEN 1 ELSE 0 END)          AS added_to_cart,
-               SUM(CASE WHEN num_checkout_views > 0 THEN 1 ELSE 0 END)      AS reached_checkout,
-               SUM(CASE WHEN conversion_status = 'converted' THEN 1 ELSE 0 END) AS converted,
-               ROUND(100 * AVG(CASE WHEN conversion_status = 'converted' THEN 1 ELSE 0 END), 2) AS conversion_rate_pct,
-               ROUND(AVG(duration_seconds), 0)                             AS avg_duration_s
-        FROM sessions
+               COUNT(*)                                                       AS sessions,
+               SUM(CAST(st_view AS INT))                                      AS viewed_product,
+               SUM(CAST(st_cart AS INT))                                      AS added_to_cart,
+               SUM(CAST(st_checkout AS INT))                                  AS reached_checkout,
+               SUM(CAST(st_checkout AND st_purchase AS INT))                  AS purchased,
+               SUM(CASE WHEN conversion_status = 'converted' THEN 1 ELSE 0 END) AS flagged_converted,
+               ROUND(100 * AVG(CAST(st_checkout AND st_purchase AS INT)), 2)  AS conversion_rate_pct,
+               ROUND(AVG(duration_seconds), 0)                                AS avg_duration_s
+        FROM s
         GROUP BY ROLLUP(device_type, referrer)
         ORDER BY device_type NULLS FIRST, referrer NULLS FIRST
     """,
@@ -123,26 +141,28 @@ QUERIES = {
         ORDER BY revenue DESC
     """,
     "A5_weekday_hour": """
-        SELECT date_format(start_time, 'E')       AS weekday,
-               dayofweek(start_time)              AS weekday_num,
-               hour(start_time)                   AS hour,
+        SELECT date_format(s.start_time, 'E')     AS weekday,
+               dayofweek(s.start_time)            AS weekday_num,
+               hour(s.start_time)                 AS hour,
                COUNT(*)                           AS sessions,
-               ROUND(100 * AVG(CASE WHEN conversion_status = 'converted' THEN 1 ELSE 0 END), 2) AS conversion_rate_pct
-        FROM sessions
+               ROUND(100 * AVG(CASE WHEN p.session_id IS NOT NULL THEN 1 ELSE 0 END), 2) AS conversion_rate_pct
+        FROM sessions s LEFT JOIN purchased_sessions p ON s.session_id = p.session_id
         GROUP BY 1, 2, 3
         ORDER BY weekday_num, hour
     """,
 }
 
 FEDERATED_SQL = """
-    -- MongoDB (mongo_users) x HBase (hbase_sessions) x Parquet (transactions)
+    -- MongoDB (mongo_users, mongo_order_sessions) x HBase (hbase_sessions) x Parquet (transactions)
     WITH engagement AS (
-        SELECT user_id,
+        SELECT h.user_id,
                COUNT(*)                                                     AS hbase_sessions,
-               ROUND(AVG(duration_seconds), 0)                              AS avg_session_s,
-               ROUND(AVG(num_page_views), 1)                                AS avg_pages,
-               SUM(CASE WHEN conversion_status = 'converted' THEN 1 ELSE 0 END) AS converted_sessions
-        FROM hbase_sessions GROUP BY user_id
+               ROUND(AVG(h.duration_seconds), 0)                            AS avg_session_s,
+               ROUND(AVG(h.num_page_views), 1)                              AS avg_pages,
+               COUNT(o.session_id)                                          AS purchase_sessions
+        FROM hbase_sessions h
+        LEFT JOIN mongo_order_sessions o ON h.session_id = o.session_id     -- session in HBase, order in MongoDB
+        GROUP BY h.user_id
     ),
     recent_spend AS (
         SELECT user_id, ROUND(SUM(total), 2) AS spend_last_30d
@@ -151,8 +171,8 @@ FEDERATED_SQL = """
         GROUP BY user_id
     )
     SELECT u.user_id, u.country, u.total_orders, u.total_spent, u.avg_order_value,
-           e.hbase_sessions, e.avg_session_s, e.avg_pages, e.converted_sessions,
-           ROUND(100 * e.converted_sessions / e.hbase_sessions, 1) AS session_conversion_pct,
+           e.hbase_sessions, e.avg_session_s, e.avg_pages, e.purchase_sessions,
+           ROUND(100 * e.purchase_sessions / e.hbase_sessions, 1) AS session_conversion_pct,
            COALESCE(r.spend_last_30d, 0)                           AS spend_last_30d
     FROM mongo_users u
     JOIN engagement e ON u.user_id = e.user_id
@@ -176,16 +196,21 @@ def register_store_views(spark, user_sample=2000):
                   for d in docs]
     spark.createDataFrame(mongo_rows, "user_id string, country string, total_orders long, total_spent double, avg_order_value double") \
         .createOrReplaceTempView("mongo_users")
+    order_sessions = db.transactions.distinct("session_id", {"user_id": {"$in": [r[0] for r in mongo_rows]},
+                                                             "session_id": {"$ne": None}})
+    spark.createDataFrame([(sid,) for sid in order_sessions], "session_id string").createOrReplaceTempView("mongo_order_sessions")
 
     table = happybase.Connection(HBASE_HOST, HBASE_PORT, timeout=120000).table("user_sessions")
-    cols = [b"s:duration_seconds", b"s:num_page_views", b"s:conversion_status"]
+    cols = [b"s:duration_seconds", b"s:num_page_views"]
     hbase_rows = []
     for user_id, *_ in mongo_rows:  # one prefix scan per user: exactly the HBase access pattern
         for key, data in table.scan(row_prefix=f"{user_id}#".encode(), columns=cols):
-            hbase_rows.append((user_id, int(data[cols[0]]), int(data[cols[1]]), data[cols[2]].decode()))
-    spark.createDataFrame(hbase_rows, "user_id string, duration_seconds long, num_page_views long, conversion_status string") \
+            session_id = key.decode().rsplit("#", 1)[1]  # row key = user_id#reverse_ts#session_id
+            hbase_rows.append((user_id, session_id, int(data[cols[0]]), int(data[cols[1]])))
+    spark.createDataFrame(hbase_rows, "user_id string, session_id string, duration_seconds long, num_page_views long") \
         .createOrReplaceTempView("hbase_sessions")
-    print(f"Registered mongo_users ({len(mongo_rows):,} docs) and hbase_sessions ({len(hbase_rows):,} rows)")
+    print(f"Registered mongo_users ({len(mongo_rows):,} docs), mongo_order_sessions ({len(order_sessions):,}) "
+          f"and hbase_sessions ({len(hbase_rows):,} rows)")
 
 
 def main():
@@ -196,6 +221,8 @@ def main():
     spark = get_spark("04_spark_sql_analytics")
     for t in TABLES:
         spark.read.parquet(curated(t)).createOrReplaceTempView(t)
+    spark.sql("SELECT DISTINCT session_id FROM transactions WHERE session_id IS NOT NULL") \
+        .createOrReplaceTempView("purchased_sessions")
 
     for name, sql in QUERIES.items():
         df = spark.sql(sql)

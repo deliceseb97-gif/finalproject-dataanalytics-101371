@@ -110,7 +110,7 @@ def conversion_funnel():
     total = df[df.device_type.isna() & df.referrer.isna()].iloc[0]
     stages = [("Sessions", total.sessions), ("Viewed a product", total.viewed_product),
               ("Added to cart", total.added_to_cart), ("Reached checkout", total.reached_checkout),
-              ("Purchased", total.converted)]
+              ("Purchased (order exists)", total.purchased)]
     fig, (ax, ax2) = plt.subplots(1, 2, figsize=(12, 4.4), gridspec_kw={"width_ratios": [1.6, 1]})
     labels, values = zip(*stages)
     ax.barh(range(len(stages))[::-1], values, color=ORDINAL_BLUE, height=0.65)
@@ -123,18 +123,22 @@ def conversion_funnel():
     ax.set_xlim(0, stages[0][1] * 1.75)
     ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v / 1e3:.0f}K"))
     ax.grid(axis="y", visible=False)
-    ax.set_title("Checkout is the biggest leak:\n54% of checkouts do not complete")
+    cart_drop = 1 - total.reached_checkout / total.added_to_cart
+    checkout_drop = 1 - total.purchased / total.reached_checkout
+    ax.set_title(f"{cart_drop:.0%} of carts never reach checkout and\n{checkout_drop:.0%} of checkouts end without an order")
 
     dev = df[df.device_type.notna() & df.referrer.isna()].sort_values("conversion_rate_pct")
     ax2.barh(dev.device_type, dev.conversion_rate_pct, color=BLUE, height=0.5)
     for i, v in enumerate(dev.conversion_rate_pct):
         ax2.text(v + 0.3, i, f"{v:.2f}%", va="center", fontsize=9, color=INK)
-    ax2.set_xlim(0, 25)
+    ax2.set_xlim(0, dev.conversion_rate_pct.max() * 1.3)
     ax2.set_title("Conversion by device")
     ax2.set_xlabel("Sessions that purchased (%)")
     ax2.grid(axis="y", visible=False)
     fig.tight_layout()
-    save(fig, "fig3_conversion_funnel.png", "Source: Spark SQL A3 over 1M sessions.")
+    save(fig, "fig3_conversion_funnel.png",
+         f"Source: Spark SQL A3 over 1M sessions. Stages are cumulative; a purchase needs a linked transaction "
+         f"({total.flagged_converted:,.0f} sessions carry the generator's 'converted' flag, only {total.purchased:,.0f} have an order).")
 
 
 def viewed_vs_sold():

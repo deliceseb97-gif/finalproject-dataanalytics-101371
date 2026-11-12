@@ -143,10 +143,20 @@ ecommerce> {
 }
 
 ecommerce> 
+ecommerce> --- the same per-user order query WITHOUT the index (forced collection scan) vs WITH it
+
+ecommerce> 
+ecommerce> 
+ecommerce> 
+ecommerce>   without index: docs examined 250000, returned 31, 58 ms
+
+ecommerce>   with index   : docs examined 31, returned 31, 0 ms
+
+ecommerce> 
 ecommerce> --- index use for the per-user order history query
 
 ecommerce> 
 ecommerce> | | |   winning plan stage: IXSCAN, index: user_id_1_timestamp_-1, docs examined: 31, returned: 31, time: 0 ms
 
 ecommerce> 
-[exit code 0 | 2.7 s | 2026-11-11 10:33:28]
+[exit code 0 | 1.4 s | 2026-11-12 19:15:27]

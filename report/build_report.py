@@ -148,19 +148,43 @@ sold_out = prods[prods.current_stock == 0]
 in_stock = prods[prods.current_stock > 0]
 lost_units = (in_stock.units_sold.mean() - sold_out.units_sold).clip(lower=0)
 lost_revenue = (lost_units * sold_out.current_price).sum()
-checkout_loss = 1 - tot.converted / tot.reached_checkout
+cart_to_checkout_loss = 1 - tot.reached_checkout / tot.added_to_cart
+checkout_loss = 1 - tot.purchased / tot.reached_checkout
+quota_session = log_value("00_generator_log.log", r"Progress: ([0-9,]+)/[0-9,]+ sessions, ([0-9,]+)/\2 transactions")
+reconciliation = re.search(r"flagged converted ([0-9,]+), with a MongoDB order ([0-9,]+), flagged and ordered ([0-9,]+)",
+                           open(os.path.join(PROJECT_ROOT, "output", "logs", "11_clv_integration.log"), encoding="utf-8").read())
+idx_without = re.search(r"without index: docs examined ([0-9]+), returned ([0-9]+), ([0-9]+) ms",
+                        open(os.path.join(PROJECT_ROOT, "output", "logs", "07_mongo_shell.log"), encoding="utf-8").read())
+idx_with = re.search(r"with index +: docs examined ([0-9]+), returned ([0-9]+), ([0-9]+) ms",
+                     open(os.path.join(PROJECT_ROOT, "output", "logs", "07_mongo_shell.log"), encoding="utf-8").read())
 dev = funnel[funnel.device_type.notna() & funnel.referrer.isna()]
-ref = funnel[funnel.device_type.notna() & funnel.referrer.notna()].groupby("referrer")[["sessions", "converted"]].sum()
-ref["rate"] = 100 * ref.converted / ref.sessions
+ref = funnel[funnel.device_type.notna() & funnel.referrer.notna()].groupby("referrer")[["sessions", "purchased"]].sum()
+ref["rate"] = 100 * ref.purchased / ref.sessions
 
 story = []
 
-# ------------------------------------------------------------------ title
+# ------------------------------------------------------------------ cover page
+CENTER = ParagraphStyle("ctr", parent=BODY, alignment=TA_CENTER, fontSize=12, leading=17)
 story += [
-    P("Distributed Multi-Model Analytics for E-commerce Data", TITLE),
-    P("AUCA Big Data Analytics - Final Project Technical Report", ParagraphStyle("st", parent=BODY, alignment=TA_CENTER, fontSize=11)),
-    P(f"{STUDENT}  |  {dt.date.today():%d %B %Y}", ParagraphStyle("st2", parent=BODY, alignment=TA_CENTER, textColor=colors.HexColor("#52514e"))),
-    Spacer(1, 6),
+    Spacer(1, 3.2 * cm),
+    P("ADVENTIST UNIVERSITY OF CENTRAL AFRICA (AUCA)", ParagraphStyle("u", parent=CENTER, fontSize=14, leading=19,
+                                                                    textColor=colors.HexColor("#0d366b"))),
+    P("Big Data Analytics", CENTER),
+    Spacer(1, 2.2 * cm),
+    P("FINAL PROJECT - TECHNICAL REPORT", ParagraphStyle("fp", parent=CENTER, textColor=colors.HexColor("#52514e"))),
+    Spacer(1, 0.4 * cm),
+    P("Distributed Multi-Model Analytics for E-commerce Data", ParagraphStyle("tt", parent=TITLE, fontSize=20, leading=25)),
+    P("MongoDB (document model) - Apache HBase (wide-column) - Apache Spark (distributed processing)",
+      ParagraphStyle("sub", parent=CENTER, fontSize=11, textColor=colors.HexColor("#1c5cab"))),
+    Spacer(1, 3.0 * cm),
+    P("Submitted by", ParagraphStyle("sb", parent=CENTER, fontSize=10, textColor=colors.HexColor("#52514e"))),
+    P("<b>SEBAGANWA SHAMI DELICE</b>", ParagraphStyle("nm", parent=CENTER, fontSize=14, leading=19)),
+    P("Student ID: 101371", CENTER),
+    Spacer(1, 2.5 * cm),
+    P("Repository: github.com/deliceseb97-gif/finalproject-dataanalytics-101371",
+      ParagraphStyle("rp", parent=CENTER, fontSize=9.5, textColor=colors.HexColor("#52514e"))),
+    P("November 2026", CENTER),
+    PageBreak(),
 ]
 
 # ------------------------------------------------------------------ 1. overview
@@ -276,6 +300,12 @@ story += [P("3. Spark processing pipelines (Part 2)", H1), P(
     "exploding. Output: 10 snappy-Parquet tables, page_views partitioned by date. The JSON arrays need multiLine=true, which "
     "makes each file a single task; converting once to Parquet removes that bottleneck for every later job. "
     f"Runtime: {float(log_value('01_spark_clean.log', r'exit code 0 [|] ([0-9.]+) s', 'nan')) / 60:.1f} min."),
+    P(f"<b>Data-quality finding - the 'converted' flag.</b> {profile.flagged_converted:,} sessions carry "
+      f"conversion_status = 'converted', but only {profile.sessions_with_order:,} sessions have a transaction linked to them: "
+      f"{profile.converted_without_order:,} 'conversions' never produced an order. The generator log explains why: its "
+      f"transaction quota (250,000) was already full at session {quota_session}, and every session flagged as converted "
+      "after that point was given no order. All analyses therefore define a <i>purchase</i> as a session with a linked "
+      "transaction, never by the flag (the cross-store check in section 4 confirms this rule)."),
     P("<b>02_recommendations.py</b> (required batch analysis). Market-basket rules for both \"users who bought X also bought Y\" "
       "(baskets = transactions) and \"products frequently viewed together\" (baskets = sessions). A self-join on the basket id with "
       "<font face='Courier'>a.product_id &lt; b.product_id</font> counts each unordered pair once (halving the shuffle); pairs are "
@@ -290,14 +320,18 @@ story += [P("3. Spark processing pipelines (Part 2)", H1), P(
       "and sales per product; A5 weekday x hour traffic. Section B registers <font face='Courier'>mongo_users</font> (documents read with "
       "pymongo) and <font face='Courier'>hbase_sessions</font> (rows read with happybase prefix scans) as views and joins them with "
       "Parquet transactions in a single SQL statement - the connector-free way of querying data that lives in the two stores. "
-      "Example (A3, conversion funnel):"),
+      "Example (A3, cumulative conversion funnel; purchased_sessions = sessions referenced by a transaction):"),
     code("""
-SELECT device_type, referrer, COUNT(*) AS sessions,
-       SUM(CASE WHEN num_product_detail_views > 0 THEN 1 ELSE 0 END)    AS viewed_product,
-       SUM(CASE WHEN num_cart_items > 0 THEN 1 ELSE 0 END)              AS added_to_cart,
-       SUM(CASE WHEN num_checkout_views > 0 THEN 1 ELSE 0 END)          AS reached_checkout,
-       SUM(CASE WHEN conversion_status = 'converted' THEN 1 ELSE 0 END) AS converted
-FROM sessions GROUP BY ROLLUP(device_type, referrer)
+WITH s AS (SELECT ss.*, num_product_detail_views > 0 AS st_view,
+                  num_product_detail_views > 0 AND num_cart_items > 0 AS st_cart,
+                  num_product_detail_views > 0 AND num_cart_items > 0
+                    AND num_checkout_views > 0 AS st_checkout,
+                  p.session_id IS NOT NULL AS st_purchase
+           FROM sessions ss LEFT JOIN purchased_sessions p ON ss.session_id = p.session_id)
+SELECT device_type, referrer, COUNT(*) AS sessions, SUM(CAST(st_view AS INT)) AS viewed_product,
+       SUM(CAST(st_cart AS INT)) AS added_to_cart, SUM(CAST(st_checkout AS INT)) AS reached_checkout,
+       SUM(CAST(st_checkout AND st_purchase AS INT)) AS purchased
+FROM s GROUP BY ROLLUP(device_type, referrer)
 """),
     P("<b>Optimisations used:</b> explicit schemas; Parquet + column pruning; date partitioning of the largest table; broadcast "
       "joins for dimensions; caching of re-used inputs; adaptive query execution; 64 shuffle partitions sized for 20 cores; "
@@ -315,8 +349,9 @@ story += [P("4. Integrated analytics workflow (Part 3): Customer Lifetime Value"
     P("<b>Sources and steps</b> (<font face='Courier'>integration/clv_integration.py</font>): (1) MongoDB <i>users</i> -> profile and geography; "
       "(2) MongoDB <i>transactions</i> -> two aggregations executed inside MongoDB (orders, revenue, first/last purchase per user; and "
       "revenue per user x category joined via $lookup to category margins) so only ~10k rows leave the database; (3) HBase "
-      "<i>user_sessions</i> -> a full scan restricted to six columns of family 's' gives sessions, duration, pages, conversion and "
-      "abandoned-cart value per user; (4) Spark joins the three DataFrames, computes RFM quintiles with <font face='Courier'>ntile(5)</font> "
+      "<i>user_sessions</i> -> a full scan restricted to family 's' gives sessions, duration, pages and cart value per user; the "
+      "session_id in each HBase row key is matched against the session_ids of MongoDB orders, so a session counts as converted "
+      "only if an order exists; (4) Spark joins the three DataFrames, computes RFM quintiles with <font face='Courier'>ntile(5)</font> "
       "windows, assigns rule-based segments and the CLV model:"),
     code("""
 CLV_12m = (orders / observed_days) x 365 x exp(-recency_days / 30)
@@ -325,55 +360,60 @@ CLV_12m = (orders / observed_days) x 365 x exp(-recency_days / 30)
     P("Spark is the right place for step 4 because it can join heterogeneous sources in memory, apply window functions over the whole "
       "customer base and scale the same code to a cluster; the databases do what they are indexed for (MongoDB: group by user; HBase: "
       "key-range scans). <b>Performance (measured):</b> the two MongoDB aggregations returned 10,000 per-user summaries in "
-      f"{log_value('11_clv_integration.log', r'order summaries [(]([0-9.]+)s')} s; the HBase scan of "
+      f"{log_value('11_clv_integration.log', r'sessions with an order [(]([0-9.]+)s')} s; the HBase scan of "
       f"{log_value('11_clv_integration.log', r'HBase: ([0-9,]+) session rows')} session rows (6 columns of family 's' only) took "
       f"{log_value('11_clv_integration.log', r'session rows [(]([0-9.]+)s')} s; the whole job including Spark start-up took "
       f"{log_value('11_clv_integration.log', r'exit code 0 [|] ([0-9.]+) s')} s. Point look-ups are interactive: HBase 'latest sessions of a user' "
       f"{log_value('10_hbase_queries.log', r'Q1 five most recent sessions of [^ ]+ +[(]([0-9.]+) ms')} ms, product date-range scan "
       f"{log_value('10_hbase_queries.log', r'Q4 daily funnel of [^ ]+ last 90 days +[(]([0-9.]+) ms')} ms; the MongoDB per-user order query "
-      "uses the (user_id, timestamp) index and examines only the matching documents (IXSCAN). With millions of customers the HBase side "
-      "would be read with the HBase-Spark connector (region-parallel scans) instead of a single Thrift client."),
+      f"uses the (user_id, timestamp) index: forcing a collection scan it examines {int(idx_without.group(1)):,} documents in "
+      f"{idx_without.group(3)} ms, with the index only {idx_with.group(1)} documents in {idx_with.group(3)} ms. With millions of customers "
+      "the HBase side would be read with the HBase-Spark connector (region-parallel scans) instead of a single Thrift client."),
+    P(f"<b>Cross-store reconciliation.</b> Of the {reconciliation.group(1)} HBase sessions flagged 'converted', "
+      f"{reconciliation.group(3)} have a matching MongoDB order (and {reconciliation.group(2)} HBase sessions have an order in total): "
+      "the keys agree across both stores. The 300k sessions loaded into HBase were generated before the transaction quota ran out, "
+      "which is why flag and orders still match here while they diverge over the full 1M sessions."),
     P("The same sources are also joined declaratively in Spark SQL (04_spark_sql_analytics.py, section B):"),
     code("""
-WITH engagement AS (                                              -- rows scanned from HBase
-    SELECT user_id, COUNT(*) AS hbase_sessions, AVG(duration_seconds) AS avg_session_s,
-           SUM(CASE WHEN conversion_status = 'converted' THEN 1 ELSE 0 END) AS converted_sessions
-    FROM hbase_sessions GROUP BY user_id)
-SELECT u.user_id, u.total_orders, u.total_spent, e.hbase_sessions, e.converted_sessions
-FROM mongo_users u                                                  -- documents read from MongoDB
+WITH engagement AS (
+    SELECT h.user_id, COUNT(*) AS hbase_sessions, AVG(h.duration_seconds) AS avg_session_s,
+           COUNT(o.session_id) AS purchase_sessions
+    FROM hbase_sessions h                                           -- rows scanned from HBase
+    LEFT JOIN mongo_order_sessions o ON h.session_id = o.session_id -- orders in MongoDB
+    GROUP BY h.user_id)
+SELECT u.user_id, u.total_orders, u.total_spent, e.hbase_sessions, e.purchase_sessions
+FROM mongo_users u                                                  -- profiles in MongoDB
 JOIN engagement e ON u.user_id = e.user_id
 ORDER BY u.total_spent DESC
 """)]
 
 if clv_seg is not None:
-    story.append(table(wrap_rows([["Segment", "Users", "Avg CLV 12m", "Avg orders", "AOV", "Recency (d)", "HBase sessions", "Session conv."]] + [
-        [r.segment, f"{r.users:,}", f"${r.avg_clv_12m:,.0f}", f"{r.avg_orders:.1f}", f"${r.avg_order_value:,.0f}",
-         f"{r.avg_recency_days:.1f}", f"{r.avg_hbase_sessions:.1f}", f"{r.avg_session_conversion:.1%}"] for r in clv_seg.itertuples()]),
-        [3.6 * cm, 1.4 * cm, 2 * cm, 1.7 * cm, 1.6 * cm, 1.9 * cm, 2.2 * cm, 2 * cm]))
-    story += figure("fig8_clv_segments.png", "Predicted 12-month CLV by RFM segment and concentration by decile (MongoDB + HBase + Spark).", width=15 * cm)
+    story += figure("fig8_clv_segments.png", "Predicted 12-month CLV by RFM segment and concentration by decile (MongoDB + HBase + Spark).", width=14 * cm)
 else:
     story.append(P("<i>[Results pending: run mongodb/load_mongodb.py, hbase/load_hbase.py and integration/clv_integration.py]</i>", SMALL))
 
 # ------------------------------------------------------------------ 5. findings
 story += [KeepTogether([P("5. Key findings and business insights (Part 4)", H1)] + figure("fig1_daily_revenue.png", f"Daily revenue (Spark SQL A1). Total {money(revenue_total)} over 90 days, "
-                f"{orders_total:,} orders, average order value ${revenue_total / orders_total:,.0f}.", width=14 * cm))]
-story += figure("fig6_weekday_hour_traffic.png", "Sessions by weekday and hour, UTC (Spark SQL A5).", width=14 * cm)
+                f"{orders_total:,} orders, average order value ${revenue_total / orders_total:,.0f}."))]
+story += figure("fig6_weekday_hour_traffic.png", "Sessions by weekday and hour, UTC (Spark SQL A5).", width=11.5 * cm)
 story += bullets([
     f"<b>Stable demand.</b> Revenue averages {money(full_days.revenue.mean())}/day (std {full_days.revenue.std() / full_days.revenue.mean():.1%}) "
     f"with no trend or weekly seasonality, and Figure {FIGNO['fig6_weekday_hour_traffic.png']} shows equally flat weekday x hour traffic. "
     "Forecasting can use a simple baseline; "
     "capacity planning does not need peak-hour provisioning for this traffic profile.",
 ])
-story += figure("fig3_conversion_funnel.png", "Session conversion funnel and conversion by device (Spark SQL A3 over 1M sessions).", width=15.5 * cm)
+story += figure("fig3_conversion_funnel.png", "Session conversion funnel and conversion by device (Spark SQL A3 over 1M sessions).", width=14.5 * cm)
 story += bullets([
-    f"<b>Checkout is the largest leak.</b> {tot.viewed_product / tot.sessions:.0%} of sessions view a product and "
-    f"{tot.added_to_cart / tot.sessions:.0%} add to cart, but only {tot.converted / tot.reached_checkout:.0%} of sessions that reach checkout "
-    f"complete it ({checkout_loss:.0%} drop out). Abandoned carts are the cheapest revenue to recover: checkout UX, saved carts and "
-    "reminder e-mails should be prioritised over acquisition.",
+    f"<b>Two leaks after the cart.</b> {tot.viewed_product / tot.sessions:.0%} of sessions view a product and "
+    f"{tot.added_to_cart / tot.sessions:.0%} add to cart, but {cart_to_checkout_loss:.0%} of carts never reach checkout and "
+    f"{checkout_loss:.0%} of checkouts end without an order, so only {tot.purchased / tot.sessions:.1%} of sessions buy. "
+    "(Using the generator's flag instead of real orders would have shown 20% and hidden most of the checkout loss.) "
+    "Abandoned carts are the cheapest revenue to recover: a shorter checkout, saved carts and reminder e-mails should come "
+    "before spending on acquisition.",
     f"Conversion is identical across devices ({dev.conversion_rate_pct.min():.1f}-{dev.conversion_rate_pct.max():.1f}%) and referrers "
     f"({ref.rate.min():.1f}-{ref.rate.max():.1f}%), so channel budget should follow cost per session rather than expected conversion.",
 ])
-story += figure("fig4_viewed_vs_sold.png", "Product views vs units sold (Spark SQL A4); orange = products with zero stock at the end of the window.", width=13.5 * cm)
+story += figure("fig4_viewed_vs_sold.png", "Product views vs units sold (Spark SQL A4); orange = products with zero stock at the end of the window.", width=12 * cm)
 story += bullets([
     f"<b>Stock-outs are the biggest product-level loss.</b> {len(sold_out):,} of {len(prods):,} active products ({len(sold_out) / len(prods):.0%}) "
     f"sold out during the window. Because the storefront stops showing them, they averaged {sold_out.views.mean():.0f} views and "
@@ -384,7 +424,7 @@ story += bullets([
     f"Within in-stock products, views are the dominant driver of sales (view-to-order {100 * in_stock.orders.sum() / in_stock.views.sum():.1f}%), "
     "so merchandising (search ranking, category placement) directly moves revenue.",
 ])
-story += figure("fig2_category_revenue_profit.png", "Revenue and estimated gross profit per category (Spark SQL A2).", width=12.5 * cm)
+story += figure("fig2_category_revenue_profit.png", "Revenue and estimated gross profit per category (Spark SQL A2).", width=11 * cm)
 story += bullets([
     f"<b>Revenue is spread evenly but profit is not.</b> Category revenue share ranges only from {cats.revenue_share_pct.min():.1f}% to "
     f"{cats.revenue_share_pct.max():.1f}% (leader: {top_cat.category_name}, {money(top_cat.revenue)}), but margins range from "
@@ -393,7 +433,7 @@ story += bullets([
     f"discounts (currently applied uniformly to {profile.discounted_orders / profile.transactions:.0%} of orders) should be "
     "steered towards high-margin categories.",
 ])
-story += figure("fig5_cohort_heatmap.png", "Revenue per cohort user by purchase month (Spark cohort analysis).", width=10 * cm)
+story += figure("fig5_cohort_heatmap.png", "Revenue per cohort user by purchase month (Spark cohort analysis).", width=9 * cm)
 coh_last_full = cohort[cohort.txn_month == "2026-10"] if cohort is not None else None
 story += bullets([
     "<b>No cohort effect.</b> Older and newer registration cohorts spend almost exactly the same per user each month "
@@ -410,7 +450,7 @@ if rec_b is not None and rec_v is not None:
     ])
 if m_seg is not None:
     story += figure("fig7_mongo_user_segments.png", "Purchase-frequency segments and average spending per user (MongoDB $bucket pipeline). Segments use "
-                    "purchase frequency instead of age groups because the dataset has no age field.", width=11.5 * cm)
+                    "purchase frequency instead of age groups because the dataset has no age field.", width=10 * cm)
 if clv_dec is not None and clv_user is not None:
     top10, bottom10 = clv_dec.iloc[0], clv_dec.iloc[-1]
     corr = {c: clv_user[["clv_12m", c]].corr().iloc[0, 1]
@@ -451,7 +491,8 @@ story += [Spacer(1, 4)] + bullets([
 
 # ------------------------------------------------------------------ 7. methodology / limitations
 story += [P("7. Methodology", H1)] + bullets([
-    "Funnel stages are measured per session from page-type counts (product_detail, cart content, checkout) and conversion_status.",
+    "Funnel stages are cumulative (each stage requires the previous ones) and measured per session from page-type counts "
+    "(product_detail, cart content, checkout); the final stage requires a linked transaction, not the generator's flag.",
     "Gross profit is estimated as revenue x the mean subcategory profit_margin of the product's category, because the generator does "
     "not assign products to subcategories.",
     "Market-basket metrics follow the standard support / confidence / lift definitions with a minimum pair count of 3.",
@@ -521,5 +562,5 @@ if available:
 
 doc = SimpleDocTemplate(OUT, pagesize=A4, leftMargin=2 * cm, rightMargin=2 * cm, topMargin=1.6 * cm, bottomMargin=1.8 * cm,
                         title="Distributed Multi-Model Analytics for E-commerce Data", author=STUDENT)
-doc.build(story, onFirstPage=footer, onLaterPages=footer)
+doc.build(story, onFirstPage=lambda c, d: None, onLaterPages=footer)
 print("Report written to", OUT)
